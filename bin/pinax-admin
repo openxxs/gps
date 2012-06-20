@@ -1,0 +1,9 @@
+#!/home/liu/gps/bin/python
+# EASY-INSTALL-ENTRY-SCRIPT: 'Pinax==0.9b1.dev10','console_scripts','pinax-admin'
+__requires__ = 'Pinax==0.9b1.dev10'
+import sys
+from pkg_resources import load_entry_point
+
+sys.exit(
+   load_entry_point('Pinax==0.9b1.dev10', 'console_scripts', 'pinax-admin')()
+)
