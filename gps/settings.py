@@ -164,7 +164,13 @@ INSTALLED_APPS = [
     
     # project
     "about",
-]
+    "SiteInfo",
+    "DataProc",
+    "ResultView",
+    "DataAnal",
+    "Toolkit",
+    
+    ]
 
 FIXTURE_DIRS = [
     os.path.join(PROJECT_ROOT, "fixtures"),
