@@ -9,17 +9,17 @@
     <h1>{% trans "What Next?" %}</h1>
     
     {% if user.is_authenticated %}
-        <p>Here are some things to do to get started with this site:</p>
+        <p>如何开始您在本站的历程:</p>
         
         <dl class="what_next">
-            <dt><a href="{% url acct_email %}">verify an email address</a></dt>
-            <dd>so you can receive notifications, reset your password and so people can find you more easily.</dd>
+            <dt><a href="{% url acct_email %}">验证邮箱地址</a></dt>
+            <dd>此后您能获取系统的通知，重置密码，找回密码等等</dd>
             
             {% ifsetting ACCOUNT_OPEN_SIGNUP %}
             {% else %}
                 {% if user.is_staff %}
-                    <dt><a href="{% url admin_invite_user %}">invite more people to the site</a> [admin only]</dt>
-                    <dd>so more people can share in the fun.</dd>
+                    <dt><a href="{% url admin_invite_user %}">邀请别人来使用这个网站</a> [仅限于管理员]</dt>
+                    <dd>所以更多人能分享你的快乐.</dd>
                 {% endif %}
             {% endifsetting %}
         </dl>
@@ -29,9 +29,9 @@
             <p class="what_next">
                 {% ifsetting ACCOUNT_OPEN_SIGNUP %}
                     {% url acct_signup as signup_url %}
-                    {% blocktrans %}Start by <a href="{{ signup_url }}">signing up</a> and <a href="{{ login_url }}">logging in</a>.{% endblocktrans %}
+                    {% blocktrans %}Start by <a href="{{ signup_url }}">注册</a> and <a href="{{ login_url }}">登录</a>.{% endblocktrans %}
                 {% else %}
-                    {% blocktrans %}Start by <a href="{{ login_url }}">logging in</a>.{% endblocktrans %}
+                    {% blocktrans %}Start by <a href="{{ login_url }}">登录</a>.{% endblocktrans %}
                 {% endifsetting %}
             </p>
         {% endif %}
