@@ -214,3 +214,65 @@ except ImportError:
     pass
 
 SITE_NAME = 'GPS'
+
+LOGGING = {  
+    'version': 1,  
+    'disable_existing_loggers': False,  
+    'formatters': {  
+        'standard': {  
+  
+            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(levelname)s]- %(message)s'  
+        },  
+    },  
+    'filters': {  
+    },  
+    'handlers': {  
+        'mail_admins': {  
+            'level': 'ERROR',  
+            'class': 'django.utils.log.AdminEmailHandler',  
+            'include_html': True,  
+        },  
+        'default': {  
+            'level':'DEBUG',  
+            'class':'logging.handlers.RotatingFileHandler',  
+            'filename': os.path.join('logs/','all.log'), 
+            'maxBytes': 1024*1024*5,
+            'backupCount': 5,  
+            'formatter':'standard',  
+        },  
+        'request_handler': {  
+            'level':'DEBUG',  
+            'class':'logging.handlers.RotatingFileHandler',  
+            'filename': os.path.join('logs/','request.log'),
+            'maxBytes': 1024*1024*5, 
+            'backupCount': 5,  
+            'formatter':'standard',  
+        },  
+        'utils_handler': {  
+            'level':'DEBUG',  
+            'class':'logging.handlers.RotatingFileHandler',  
+            'filename': os.path.join('logs/','utils.log'),
+            'maxBytes': 1024*1024*5, 
+            'backupCount': 5,  
+            'formatter':'standard',  
+        },  
+    },  
+    'loggers': {  
+        'django': {  
+            'handlers': ['default'],  
+            'level': 'DEBUG',  
+            'propagate': False  
+        },  
+        'django.request': {  
+            'handlers': ['request_handler'],  
+            'level': 'DEBUG',  
+            'propagate': False  
+        },  
+        'utils': {  
+            'handlers': ['utils_handler'],  
+            'level': 'DEBUG',  
+            'propagate': False  
+        },  
+    }  
+}
+

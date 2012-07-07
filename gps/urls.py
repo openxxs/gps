@@ -29,14 +29,11 @@ urlpatterns = patterns("",
 )
 
 urlpatterns +=patterns('', 
-    (r'^exp2nd/(?P<path>.*)$', 'django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'exp2nd')}),
+    (r'^exp2nd/(?P<path>.*)$', 'django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'*/exp2nd')}),
     (r'^data_download/(?P<path>.*)$', 'django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'data_download')}),
     (r'^track/(?P<path>.*)$', 'django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'track')}),
     (r'^log/(?P<path>.*)$', 'django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'log')}),
     (r'^site_list/(?P<path>.*)$', 'django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'site_list')}),
-    (r'^css/(?P<path>.*)$', 'django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'templates/css')}),
-    (r'^js/(?P<path>.*)$', 'django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'templates/js')}),
-    (r'^images/(?P<path>.*)$', 'django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'templates/images')}),
     (r'^amstock/(?P<path>.*)$', 'django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'templates/amstock')}),
     (r'^base/(?P<path>.*)$', 'django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'templates/base')}),
 )

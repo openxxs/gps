@@ -1,37 +1,47 @@
 #! /usr/bin/env python
 #coding=utf-8
-from django.http import HttpResponse,Http404,HttpResponseRedirect
+from django.http import HttpResponseRedirect,HttpResponse
 from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User
+from django.utils.log import logging
 
-import commands
-import os,sys,re,shutil,linecache,glob,copy
+import sys,datetime,json,commands,os,re,shutil,linecache,glob,copy,threading,time
+from subprocess import *
+
 import extractOscalaFile
 import getBaselineData
 import getAtmosphereData
 import getMbData
-import datetime
+
 import track
 import trackrt
-import threading
-from subprocess import *
-import time
+
+from gps.config import CONFIG
+from gps.utils import isLeap
+
+from forms import *
+
 import ion
 import modifyText
 import monthToDay
-from dataDownload import intervel
-from django.utils.log import logging
-import ConfigParser
 
-username=''
+
+from dataDownload import intervel
+
+
+
 error=''
 log = logging.getLogger('dataprocess')
-config=ConfigParser.ConfigParser()
-config.read("software.ini")
-GAMITTABLE = config.get("path","GAMITTABLEPATH")
-SOFTWAREPATH = config.get("path","SOFTWAREPATH")
-RINEXPATH = config.get("path","RINEXPATH")
-fileList = config.get("path","fileList").split('%%')
-downloadList = config.get("path","downloadList").split('%%')
+
+GAMITTABLE = CONFIG.GAMITTABLEPATH
+SOFTWAREPATH = CONFIG.SOFTWAREPATH
+RINEXPATH = CONFIG.RINEXPATH
+fileList = CONFIG.fileList.split('%%')
+downloadList = CONFIG.downloadList.split('%%')
+
+
 cwd = SOFTWAREPATH
 
 
@@ -46,18 +56,6 @@ tasksNum=0
 tasks=[]
 is_available = 1
 IGS = 'IGSF'
-
-def checkUser(request):
-    global username,error
-    if 'error' in request.GET:
-        error=request.GET['error']
-    else:
-        error=''
-    if request.user.is_authenticated():
-        username=request.user
-    else:
-        username=''
-    log.info(username,error)
 
 def datatrack(request):
     checkUser(request)
@@ -216,19 +214,28 @@ def atmosphereProcess(request):
     getAtmosphereData.getData('atmosphere')
     return HttpResponse("successful")
 
-def bulkProcess(request,year_1,day_1,year_2,day_2,IGS):
-    checkUser(request)
-    if not os.path.exists("%s"%username):
-        Init_experiment("%s"%username)
-    readDst("%s"%username)
-    Gamitdata_analysing("%s"%username)
-    ts_process("%s"%username)
-    getMbData.getMbData(dst)
-    vel_process("%s"%username)
-    extractOscalaFile.extractFile(year_1,day_1,year_2,day_2)
-    getBaselineData.getData('batch')
-    getAtmosphereData.getData('batch')
-    return HttpResponse("successful")
+@user_passes_test()
+def bulkProcess(request):
+    error=''
+    username = request.user.username
+    form = BulkProcessForm()
+    if request.method =='POST':
+        form = BulkProcessForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            year_1,day_1,year_2,day_2,IGS=int(data['StartYear']),int(data['StartDay']),int(data['EndYear']),int(data['EndDay']),data['IGS']
+            os.chdir(SOFTWAREPATH)
+            if not os.path.exists(username):
+                Init_experiment(username,year_1,year_2)
+            error+=Gamitdata_analysing(username,year_1,day_1,year_2,day_2,IGS)
+            error+=ts_process(username)
+            getMbData.getMbData(dst)
+            error+=vel_process(username)
+            extractOscalaFile.extractFile(year_1,day_1,year_2,day_2)
+            getBaselineData.getData('batch')
+            getAtmosphereData.getData('batch')
+            return HttpResponse("successful")
+    return render_to_response('DataProc/bulkProcess.html',{'form':form.'error':error},context_instance=RequestContext(request))
 
 
 def writeConfigFile(request):
@@ -288,29 +295,23 @@ def initParameter(request,bAlldst):
     log.info("successfully splited parameters")
 
 
-def isLeap(year):
-    if (year%4==0 and year%100!=0) or (year%400==0):
-        return 366
-    else:
-        return 365
 
 
-def Init_experiment(prj):
+
+def Init_experiment(prj,year_1,year_2):
 #   清理experiment文件，根据初始年日及最终年日生成对应文件夹存放结果，同时将tables里必需的文件链入年份内的tables文件里
     global error
     log.info('init_experiment'+prj)
     os.mkdir(prj)
-    os.popen("cd %s"%prj)
-    os.mkdir("experiment")
+    os.popen("cd %s;mkdir experiment"%prj)
     for year in xrange(year_1,year_2+1):
-        os.popen("cd experiment     ; mkdir %s" % str(year))
-        os.popen("cd experiment/%s; mkdir rinex; ln -s %s/????/* rinex; cp -rf %s tables/ " %(str(year),RINEXPATH,GAMITTABLE))
+        os.popen("cd experiment; mkdir %s;cd %s; mkdir rinex; ln -s %s/????/* rinex; cp -rf %s tables/ " %(str(year),str(year),RINEXPATH,GAMITTABLE))
     return True
 
-def Gamitdata_analysing(prj):
-    global error
+def Gamitdata_analysing(prj,year_1,day_1,year_2,day_2,IGS):
+    error =''
     log.info('analysing')
-    os.chdir(cwd+prj)
+    os.chdir(SOFTWAREPATH+prj)
     for t in xrange(year_1,year_2+1):
         outfiles0 = commands.getstatusoutput('cd experiment/%s ; sh_setup -yr %d' % (str(t),t))
         log.info(outfiles0)
@@ -320,7 +321,7 @@ def Gamitdata_analysing(prj):
                 cmd_glred = 'cd experiment/%s ; sh_glred -s %d %d %d %d -expt scal -opt H G E > sh_glred.log' % (str(t),t,day_1,t,day_2)  #----------------bxy 2012-1-5)
                 os.popen(cmd_gamit)
                 os.popen(cmd_glred)
-                os.popen('cp '+os.path.join(cwd,'experiment/%s/glbf/h*glx ' % str(year_1))+os.path.join(cwd,'exp2nd/h_results'))
+                os.popen('cp '+os.path.join(SOFTWAREPATH+prj,'experiment/%s/glbf/h*glx ' % str(year_1))+os.path.join(cwd,'exp2nd/h_results'))
             if  year_2-year_1 == 1:
                 if  t == year_1:
                     sumday = isLeap(year_1)
@@ -371,15 +372,15 @@ def Gamitdata_analysing(prj):
         except Exception:
             error += "%s: Error occured when processing by command sh_gamit , sh_glred or sh_cleanup.\n" % datetime.datetime.now()
             log.info("%s: Error occured when processing by command sh_gamit , sh_glred or sh_cleanup.\n" % datetime.datetime.now())
-            return True
+    return error
 
 
 def ts_process(prj):
-    global error
+    error = ''
     log.info('ts_process')
 #   用Gamitdata_analysing()里处理出的数据画时间序列和速度场
 #   vsoln文件夹里存放结果文件和生成的图片
-    os.chdir(cwd+prj)
+    os.chdir(SOFTWAREPATH+prj)
 #   结果处理，由sh_plotcrd得到时间序列结果
 #   sh_plotcrd 参数中-s long控制横坐标的跨度大，默认default为short，跨度小，-mb生成mb文件，从中提取结果
     try:
@@ -390,30 +391,32 @@ def ts_process(prj):
         globk 6 globk_vel.prt globk_vel.log scal.gdl globk_vel.cmd ;                                \
         sh_plotvel -ps scal -f globk_vel.org -R240/246/32/35 -factor 0.5 -arrow_value 10  -page L ')
     except Exception:
-        error += "%s: Processing by command sh_plotcrd or sh_plotvel wrong!\n" % datetime.datetime.now()
+        error = "%s: Processing by command sh_plotcrd or sh_plotvel wrong!\n" % datetime.datetime.now()
         log.info("%s: Processing by command sh_plotcrd or sh_plotvel wrong!\n" % datetime.datetime.now())
+    return error
 
 def vel_process(prj):
-    global error
-    os.chdir(cwd+prj)
-    orgVelPath = os.path.join(cwd,'experiment/vsoln/globk_vel.org')
-    desVelPath = os.path.join(cwd,'exp2nd/vel_result/globk_vel.org')
+    error=''
+    os.chdir(SOFTWAREPATH+prj)
+    orgVelPath = os.path.join(SOFTWAREPATH+prj,'experiment/vsoln/globk_vel.org')
+    desVelPath = os.path.join(SOFTWAREPATH+prj,'exp2nd/vel_result/globk_vel.org')
     cmd='cp %s %s' % (orgVelPath,desVelPath)
     try:
         os.popen(cmd)
-        cmd='cd %s ; ./velDataCollect.sh' % os.path.join(cwd,'exp2nd/vel_result')
+        cmd='cd %s ; ./velDataCollect.sh' % os.path.join(SOFTWAREPATH+prj,'exp2nd/vel_result')
         os.popen(cmd)
     except Exception:
-        error += "%s: Processing by command velDataCollect.sh wrong!\n" % datetime.datetime.now()
+        error = "%s: Processing by command velDataCollect.sh wrong!\n" % datetime.datetime.now()
         log.info("%s: Processing by command velDataCollect.sh wrong!\n" % datetime.datetime.now())
-
+    return error
 
 def initProcess(request):
     checkUser(request)
     return render_to_response("InitProcess.html",{'username':username,'error':error})
-
+    
+@user_passes_test()
 def tableStatistic(request):
-    checkUser(request)
+    username= request.user.username
     os.chdir(SOFTWAREPATH+username+"/tables/")
     #"soltab.*","luntab.*","nutabl.*",
     filestatus = [{'name':filen,'time':time.ctime(os.path.getmtime(filen))} for filen in fileList]

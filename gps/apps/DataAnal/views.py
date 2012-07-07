@@ -2,14 +2,12 @@
 #-*- coding: utf-8 -*-
 
 from math import atan,sqrt,cos,sin
-import os,linecache
+import os,linecache,datetime
 #from sitesInfo import readInfo
-from monthToDay import ymdToYd
+from gps.utils import ymdToYd
 import commands
 from django.shortcuts import render_to_response
 import getMax_Min
-import datetime
-import pdb
 from django.utils.log import logging
 import customforms
 
