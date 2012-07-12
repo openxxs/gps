@@ -7,6 +7,9 @@ from gps.config import CONFIG
 
 log = logging.getLogger('utils')
 
+unleap = [0,31,28,31,30,31,30,31,31,30,31,30,31]
+leap = [0,31,29,31,30,31,30,31,31,30,31,30,31]   
+
 def isLeap(year):
     return  ((not(year%4) and year%100) or (not(year%400))) and 366 or 365
 
@@ -14,8 +17,7 @@ def ymdToYd(year,month,day):
     y = int(year)
     m = int(month)
     d = int(day)
-    unleap = [0,31,28,31,30,31,30,31,31,30,31,30,31]
-    leap = [0,31,29,31,30,31,30,31,31,30,31,30,31]   
+
     if (isLeap(y)-366):
     	sum_day=reduce(lambda x,y:x+y,unleap[:m])
     else:
@@ -69,3 +71,28 @@ def getMax_MinFromFile(orgFile,counts):
     result=linecache.getlines(desFile)
     os.popen('rm %s' % desFile)
     return result
+
+def mon2day(year,month):
+    if (isLeap(year)-365):
+        return leap[month]
+    else:
+        return unleap[month]
+            
+def doy(date):#这一块需要将输入的数据放到一个数组里，比如输入为年月日，则date大小为三，输入为年日，date大小为二
+
+    if len(date)==3:      
+        if(int(date[1])>12):
+            date[1]='12'
+        elif(int(date[1])<1):
+            date[1]='1'        
+        os.popen("doy %s %s %s | awk 'NR==1{print $2,$6,$10}NR==2{Decimal = $3+''+$7;print Decimal}NR==3{print $3}' >tmp" % (date[0],date[1],date[2])) 
+                                 
+    if len(date)==2:             
+        os.popen("doy %s %s | awk 'NR==1{print $2,$6,$10}NR==2{Decimal = $3+''+$7;print Decimal}NR==3{print $3}' >tmp" % (date[0],date[1])) 
+    f = open("tmp","r")
+    doyResult=[]   
+    for line in f:
+        doyResult.append(line)
+    os.popen('rm tmp')
+    print doyResult
+    return doyResult

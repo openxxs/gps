@@ -17,18 +17,6 @@ log = logging.getLogger('django')
 
 username=''
 error=''
-
-def checkUser(request):
-    global username,error
-    if 'error' in request.GET:
-        error=request.GET['error']
-    else:
-        error=''
-    if request.user.is_authenticated():
-        username=request.user
-    else:
-        username=''
-    print username,error
     
 def strain(request):
     checkUser(request)

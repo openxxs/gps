@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 #coding=utf-8
 from django import forms
-
+def _(msg):
+	return msg
 my_messages={'required':_(u'输入不能为空')}
 IGS = (
 	('IGSF','IGSF'),
@@ -11,9 +12,9 @@ IGS = (
 
 class ProcessForm(forms.Form):
 	StartYear = forms.CharField(required=True,error_messages=my_messages)
-	StartDay = forms.CharField(required=True,error_messages=my_messages)
-	EndYear = forms.CharField(required=True,error_messages=my_messages)
-	EndDay = forms.CharField(required=True,error_messages=my_messages)
+	StartDay  = forms.CharField(required=True,error_messages=my_messages)
+	EndYear   = forms.CharField(required=True,error_messages=my_messages)
+	EndDay    = forms.CharField(required=True,error_messages=my_messages)
 
 	def clean_StartYear(self):
 		StartYear = self.data.get('StartYear')

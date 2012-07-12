@@ -5,25 +5,11 @@ import changeFrame
 import myDoy
 import  dataDownload 
 import os
-
-username=''
-error=''
+from gps.config import CONFIG
 
 #cwd=os.path.dirname(__file__) 
-cwd=os.getcwd()
-
-def checkUser(request):
-    global username,error
-    if 'error' in request.GET:
-        error=request.GET['error']
-    else:
-        error=''
-    if request.user.is_authenticated():
-        username=request.user
-    else:
-        username=''
-    print username,error
-    
+SOFTWAREPATH = CONFIG.SOFTWAREPATH
+ 
 def doy(request):
     checkUser(request)
     return render_to_response("doy.html",{'username':username,'error':error})
@@ -67,13 +53,13 @@ def transformDoy(request):
         doyResult =myDoy.doy(['2000','1','1'])
         doyYear='2000'
         
-    date=doyResult[0].split()
-    dateTmp = date[0].split('/')
-    dateYear = dateTmp[0]
-    dateMonth=dateTmp[1]
-    dateDay = dateTmp[2]  
-    doyDay = date[1]
-    MJD = date[2]          
+    date      = doyResult[0].split()
+    dateTmp   = date[0].split('/')
+    dateYear  = dateTmp[0]
+    dateMonth = dateTmp[1]
+    dateDay   = dateTmp[2]  
+    doyDay    = date[1]
+    MJD       = date[2]          
     if(doyResult[1].find(',')!=-1):
         gpsWeek = doyResult[1][0:-2]
     else:

@@ -119,13 +119,13 @@ def trackRTProcess(request):
 
 
 def trackProcess(request):
-    sYear = (int)(request.GET['sYear'])
+    sYear  = (int)(request.GET['sYear'])
     sMonth = (int)(request.GET['sMonth'])
-    sDay = (int)(request.GET['sDay'])
-    sHour = (int)(request.GET['sHour'])
-    eHour = (int)(request.GET['eHour'])
+    sDay   = (int)(request.GET['sDay'])
+    sHour  = (int)(request.GET['sHour'])
+    eHour  = (int)(request.GET['eHour'])
     log.info(sYear,sMonth,sDay,sHour,eHour)
-    sites = request.GET['sites'].split()
+    sites  = request.GET['sites'].split()
     log.info(sites)
 
     #下载一天的sp3数据
