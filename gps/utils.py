@@ -96,3 +96,17 @@ def doy(date):#这一块需要将输入的数据放到一个数组里，比如�
     os.popen('rm tmp')
     print doyResult
     return doyResult
+
+def getMbData(user,station):
+    orgdir = os.path.join(SOFTWAREPATH,user,'experiment/vsoln')
+    desdir = os.path.join(SOFTWAREPATH,user,'exp2nd/TimeSeries_accuracy')
+    for s in station:
+        s=s.upper()
+        for n in range(1,4):
+            desmb = 'mb_%s.dat%d' % (s,n)
+            orgmb = 'mb_%s.dat%d' % (s,n)
+            os.popen('cd %s ; mv %s %s ; cp -f %s %s' % (orgdir,orgmb,desmb,desmb,desdir))       
+        os.popen('cd %s ; ./mbDataCollect.sh %s' % (desdir,s)) 
+
+def extractFile(start_y,start_d,end_y,end_d):
+    pass 
