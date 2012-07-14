@@ -18,7 +18,7 @@ cwd=os.getcwd()
 username=''
 error=''
 
-linkPath='exp2nd/linkTS_Example/'
+linkPath='exp3nd/linkTS_Example/'
 yr1=''
 mon1=''
 day1=''
