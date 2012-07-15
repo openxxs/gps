@@ -18,22 +18,22 @@
                   数据信息
                   <b class="caret"></b>
                 </a>
-                <ul id="siteInfo" class="dropdown-menu">
+                <ul id="SiteInfo" class="dropdown-menu">
                   <li>
-                    <a href="/siteInfo/map">台站分布</a>
+                    <a href="/SiteInfo/map">台站分布</a>
                   </li>
                   <li>
-                    <a href="/siteInfo/siteList">台站列表</a>
+                    <a href="/SiteInfo/siteList">台站列表</a>
                   </li>
                   <li>
-                    <a href="/siteInfo/dataManaging">台站质量</a>
+                    <a href="/SiteInfo/dataManaging">台站质量</a>
                   </li>
                   <li>
-                    <a href="/siteInfo/log">台站信息更新</a>
+                    <a href="/SiteInfo/log">台站信息更新</a>
                   </li>
                   <li class="divider"></li>
                   <li>
-                    <a href="/siteInfo">台网信息</a>
+                    <a href="/SiteInfo">台网信息</a>
                   </li>
                 </ul>
               </li>
@@ -43,28 +43,28 @@
                   数据处理
                   <b class="caret"></b>
                 </a>
-                <ul id="dataProcessing" class="dropdown-menu">
+                <ul id="DataProc" class="dropdown-menu">
                   <li>
-                    <a href="/dataProcessing">批量常规处理</a>
+                    <a href="/DataProc">批量常规处理</a>
                   </li>
                   <li>
-                    <a href="/dataProcessing/baseline">基线处理</a>
+                    <a href="/DataProc/baseline">基线处理</a>
                   </li>
                   <li>
-                    <a href="/dataProcessing/datatrack">事后数据处理</a>
+                    <a href="/DataProc/datatrack">事后数据处理</a>
                   </li>
                   <li>
-                    <a href="/dataProcessing/datatrackrt">实时数据处理</a>
+                    <a href="/DataProc/datatrackrt">实时数据处理</a>
                   </li>
                   <li>
-                    <a href="/dataProcessing/atmosphericDelay">大气延迟处理</a>
+                    <a href="/DataProc/atmosphericDelay">大气延迟处理</a>
                   </li>
                   <li>
-                    <a href="/dataProcessing/ionosphere">电离层处理</a>
+                    <a href="/DataProc/ionosphere">电离层处理</a>
                   </li>
                   <li class="divider"></li>
                   <li>
-                    <a href="/dataProcessing">数据处理</a>
+                    <a href="/DataProc">数据处理</a>
                   </li>
                 </ul>
               </li>
@@ -74,19 +74,19 @@
                   数据分析
                   <b class="caret"></b>
                 </a>
-                <ul id="analysing" class="dropdown-menu">
+                <ul id="DataAnal" class="dropdown-menu">
                   <li>
-                    <a href="/analysing/crustalStrain">地壳应变状态</a>
+                    <a href="/DataAnal/crustalStrain">地壳应变状态</a>
                   </li>
                   <li>
-                    <a href="/analysing/faultActivity">断层活动性</a>
+                    <a href="/DataAnal/faultActivity">断层活动性</a>
                   </li>
                   <li>
-                    <a href="/analysing/smallscalePlateMotion">小尺度板块运动</a>
+                    <a href="/DataAnal/smallscalePlateMotion">小尺度板块运动</a>
                   </li>
                   <li class="divider"></li>
                   <li>
-                    <a href="/analysing">数据分析</a>
+                    <a href="/DataAnal">数据分析</a>
                   </li>
                 </ul>
               </li>
@@ -96,22 +96,22 @@
                   结果查看
                   <b class="caret"></b>
                 </a>
-                <ul id="resultView" class="dropdown-menu">
+                <ul id="ResultView" class="dropdown-menu">
                   <li>
-                    <a href="/resultView/timeSeries">时间序列</a>
+                    <a href="/ResultView/timeSeries">时间序列</a>
                   </li>
                   <li>
-                    <a href="/resultView/velocities">速度场</a>
+                    <a href="/ResultView/velocities">速度场</a>
                   </li>
                   <li>
-                    <a href="/resultView/atmosphereZenithDelay">大气天顶延迟</a>
+                    <a href="/ResultView/atmosphereZenithDelay">大气天顶延迟</a>
                   </li>
                   <li>
-                    <a href="/resultView/resultApx">结果精度</a>
+                    <a href="/ResultView/resultApx">结果精度</a>
                   </li>
                   <li class="divider"></li>
                   <li>
-                    <a href="/resultView">结果查看</a>
+                    <a href="/ResultView">结果查看</a>
                   </li>
                 </ul>
               </li>
@@ -121,15 +121,15 @@
                   工具包
                   <b class="caret"></b>
                 </a>
-                <ul id="toolkits" class="dropdown-menu">
+                <ul id="Toolkit" class="dropdown-menu">
                   <li>
-                    <a href="/toolkits/doy">时间转换</a>
+                    <a href="/Toolkit/doy">时间转换</a>
                   </li>
                   <li>
-                    <a href="/toolkits/framework">参考架转换</a>
+                    <a href="/Toolkit/framework">参考架转换</a>
                   </li>
                   <li>
-                    <a href="/toolkits/dataDownload">数据下载</a>
+                    <a href="/Toolkit/dataDownload">数据下载</a>
                   </li>
                 </ul>
               </li>
@@ -177,34 +177,6 @@
                   </li>
                 </ul>
               </li>
-              {# 
-                
-                {% if username %}
-                <li>
-                  <a>
-                    欢迎你，{{username}}!
-                  </a>
-                </li>
-                <li>
-                <form action="/userLogout/" method="get"> 
-                  <button type="submit" class="btn">退出</button>
-                </form>
-                </li>
-                {% else %}
-              <li>
-              <form class="form-inline" action="/userLogin" method="GET">
-              <input type="text" class="input-small" name="username" placeholder="用户名">
-              <input type="password" class="input-small" name="userpwd" placeholder="密码">
-              <button type="submit" class="btn">登录</button>
-              </form>
-              </li>
-              {% endif %}
-              
-              {% if error %}
-              <li class="">
-                <a>用户名或密码错误，请重试</a>
-              </li>
-              {% endif %} #}
             </ul>
           </div>
         </div>

@@ -3,10 +3,10 @@ from django.views.generic.simple import direct_to_template
 
 
 urlpatterns =patterns('gps.apps.Toolkit.views',
-    (r'^Toolkit/doy$','doy'),
-    (r'^Toolkit/transformDoy$','transformDoy'),
-    (r'^Toolkit/framework$','framework'),
-    (r'^Toolkit/changeFrame$','changeFrames'),
-    (r'^Toolkit/dataDownload$','dataDownloads'),
-    (r'^Toolkit/dataDownloadProcess$','dataDownloadProcess'),
+    (r'doy$','doy'),
+    (r'transformDoy$','transformDoy'),
+    (r'framework$','framework'),
+    (r'changeFrame$','changeFrames'),
+    (r'dataDownload$','dataDownloads'),
+    (r'dataDownloadProcess$','dataDownloadProcess'),
 )
