@@ -94,7 +94,6 @@ def doy(date):#这一块需要将输入的数据放到一个数组里，比如�
     for line in f:
         doyResult.append(line)
     os.popen('rm tmp')
-    print doyResult
     return doyResult
 
 def getMbData(user,station):
@@ -120,8 +119,5 @@ def getBaselineData():
 def getAtmosphereData():
     pass
 
-def tract():
-    pass
-
-def trackrt():
-    pass
+def numToDay(d):
+    return "%03d"%d

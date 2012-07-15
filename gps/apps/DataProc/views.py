@@ -15,13 +15,15 @@ from subprocess import *
 #import getAtmosphereData
 #import getMbData
 #
-#import track
-#import trackrt
+import gps.track
+import gps.trackrt
 
 from gps.config import CONFIG
 from gps.utils import isLeap
 
 from forms import *
+
+from gps import kmp
 
 #import ion
 #import modifyText
@@ -574,5 +576,12 @@ def resetConfigFile(request):
     [os.popen("rm %s;cp %s.bak %s" % (filename, filename, filename)) for filename in fileList]
     return true
 
-
-# Create your views here.
+def s_result(request):
+    sitelist=readDst()
+    key=request.POST['key']
+    rs=[]
+    for sitecode in sitelist:
+        kmp_rs=kmp.kmp_matcher(sitecode,key)
+        if kmp_rs!=-1:
+            rs.append(sitecode)
+    return HttpResponse(simplejson.dumps(rs))
