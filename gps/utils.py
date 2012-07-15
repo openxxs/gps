@@ -110,3 +110,18 @@ def getMbData(user,station):
 
 def extractFile(start_y,start_d,end_y,end_d):
     pass 
+
+def changeFrame():
+    pass
+
+def getBaselineData():
+    pass
+
+def getAtmosphereData():
+    pass
+
+def tract():
+    pass
+
+def trackrt():
+    pass

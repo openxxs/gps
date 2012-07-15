@@ -29,8 +29,6 @@ from forms import *
 
 #from dataDownload import intervel
 
-
-error = ''
 log = logging.getLogger('dataprocess')
 
 GAMITTABLE = CONFIG.GAMITTABLEPATH
@@ -53,8 +51,8 @@ tasks        = []
 is_available = 1
 IGS          = 'IGSF'
 
+@user_passes_test(lambda u:u.is_authenticated)
 def datatrack(request):
-    checkUser(request)
     return render_to_response("datatrack.html", {'username': username, 'error': error})
 
 
@@ -116,7 +114,7 @@ def trackRTProcess(request):
     log.info('***********', request.session['trackRT_ID'])
     return HttpResponse("sucess!")
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def trackProcess(request):
     sYear = (int)(request.GET['sYear'])
     sMonth = (int)(request.GET['sMonth'])
@@ -148,24 +146,21 @@ def trackRTView(request):
     log.info(trackRT_ID)
     return render_to_response('trackRTView.html', {'trackRT_ID': trackRT_ID})
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def datatrackrt(request):
-    checkUser(request)
-    return render_to_response("datatrackrt.html", {'username': username, 'error': error})
+    return render_to_response("datatrackrt.html", {'username': username, 'error': error},context_instance=RequestContext(request))
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def atmosphericDelay(request):
-    checkUser(request)
     return render_to_response("atmosphericDelay.html", {'username': username, 'error': error,
-                                                        'refStation': 'bjfs guam irkt kit3 lhaz pimo pol2 shao twtf tnml tskb urum wuhn'})
+                                                        'refStation': 'bjfs guam irkt kit3 lhaz pimo pol2 shao twtf tnml tskb urum wuhn'},context_instance=RequestContext(request))
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def baseline(request):
-    checkUser(request)
     return render_to_response("baseline.html", {'username': username, 'error': error,
-                                                'refStation': 'bjfs guam irkt kit3 lhaz pimo pol2 shao twtf tnml tskb urum wuhn'})
+                                                'refStation': 'bjfs guam irkt kit3 lhaz pimo pol2 shao twtf tnml tskb urum wuhn'},context_instance=RequestContext(request))
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def ionosphere(request):
     start_y = request.GET('startYear')
     start_d = request.GET('startDay')
@@ -174,14 +169,14 @@ def ionosphere(request):
     ion.ion(start_y, start_d, end_y, end_d)
 
     checkUser(request)
-    return render_to_response("ionosphere.html", {'username': username, 'error': error})
+    return render_to_response("ionosphere.html", {'username': username, 'error': error},context_instance=RequestContext(request))
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def highFrequencyData(request):
     checkUser(request)
-    return render_to_response("highFrequencyData.html", {'username': username, 'error': error})
+    return render_to_response("highFrequencyData.html", {'username': username, 'error': error},context_instance=RequestContext(request))
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def readDst(prj):
     global dst
     f = prj + "/tables/sites.defualts"
@@ -190,12 +185,12 @@ def readDst(prj):
         dst.append(line.split()[0])
     return dst
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def ionosphere(request):
     checkUser(request)
-    return render_to_response("ionosphere.html", {'username': username, 'error': error})
+    return render_to_response("ionosphere.html", {'username': username, 'error': error},context_instance=RequestContext(request))
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def ionosphereProcess(request):
     start_year = request.GET['startYear']
     start_day = request.GET['startDay']
@@ -205,7 +200,7 @@ def ionosphereProcess(request):
     ion.ion(start_year, start_day, end_year, end_day)
     return HttpResponse("successful")
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def baselineProcess(request):
     initParameter(request, "")
     showParameter()
@@ -215,7 +210,7 @@ def baselineProcess(request):
     getBaselineData.getData('baseline')
     return HttpResponse("successful")
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def atmosphereProcess(request):
     initParameter(request, "true")
     showParameter()
@@ -251,7 +246,7 @@ def bulkProcess(request):
     return render_to_response('DataProc/bulkProcess.html', {'form': form, 'error': error},
                               context_instance=RequestContext(request))
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def writeConfigFile(request):
     if 'editConfig' in request.GET:
         configText = request.GET['editConfig']
@@ -264,7 +259,7 @@ def writeConfigFile(request):
     #checkUser(request)
     #return render_to_response("dataProcessing.html",{'username':username,'error':error,'refStation':'jplm'})
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def modifyConfigFile(request):
     modifyType = request.POST['modifyType']
     if modifyType == 'read':
@@ -285,12 +280,12 @@ def modifyConfigFile(request):
         modifyText.restore()
         return HttpResponse('successful')
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def showParameter():
     log.info(dst, year_1, day_1, year_2, day_2, ext)
     print dst, year_1, day_1, year_2, day_2, ext
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def initParameter(request, bAlldst):
     global year_1, day_1, year_2, day_2, dst_station, ext, dst, is_available, IGS
     log.info("get and split parameters")
@@ -311,7 +306,7 @@ def initParameter(request, bAlldst):
     ext = ext_station.split()
     log.info("successfully splited parameters")
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def Init_experiment(prj, year_1, year_2):
 #   清理experiment文件，根据初始年日及最终年日生成对应文件夹存放结果，同时将tables里必需的文件链入年份内的tables文件里
     global error
@@ -323,7 +318,7 @@ def Init_experiment(prj, year_1, year_2):
         str(year), str(year), RINEXPATH, GAMITTABLE))
     return True
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def Gamitdata_analysing(prj, year_1, day_1, year_2, day_2, IGS):
     error = ''
     log.info('analysing')
@@ -420,7 +415,7 @@ def Gamitdata_analysing(prj, year_1, day_1, year_2, day_2, IGS):
                 "%s: Error occured when processing by command sh_gamit , sh_glred or sh_cleanup.\n" % datetime.datetime.now())
     return error
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def ts_process(prj):
     error = ''
     log.info('ts_process')
@@ -441,7 +436,7 @@ def ts_process(prj):
         log.info("%s: Processing by command sh_plotcrd or sh_plotvel wrong!\n" % datetime.datetime.now())
     return error
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def vel_process(prj):
     error = ''
     os.chdir(SOFTWAREPATH + prj)
@@ -457,7 +452,7 @@ def vel_process(prj):
         log.info("%s: Processing by command velDataCollect.sh wrong!\n" % datetime.datetime.now())
     return error
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def initProcess(request):
     checkUser(request)
     return render_to_response("InitProcess.html", {'username': username, 'error': error})
@@ -469,9 +464,9 @@ def tableStatistic(request):
     os.chdir(SOFTWAREPATH + username + "/tables/")
     #"soltab.*","luntab.*","nutabl.*",
     filestatus = [{'name': filen, 'time': time.ctime(os.path.getmtime(filen))} for filen in fileList]
-    return render_to_response("tableStatistic.html", {'fileList': filestatus})
+    return render_to_response("tableStatistic.html", {'fileList': filestatus},context_instance=RequestContext(request))
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def readfile(filepath):
     f = open(filepath)
     result = ""
@@ -482,7 +477,7 @@ def readfile(filepath):
     f.close
     return result
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def tableStatisticDetail(request, filename):
     result = ""
     if filename == "bulk":
@@ -505,7 +500,7 @@ def tableStatisticDetail(request, filename):
         result = "error"
     return HttpResponse(result)
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def dataStatisticDetail(request):
     checkUser(request)
     usern = username.username
@@ -535,14 +530,14 @@ def dataStatisticDetail(request):
     inforarray = []
     return render_to_response("dataStatisticResult.html",
             {'sitelist': siteList, 'infoList': inforarray, 'username': username, 'error': error, 'year_1': year_1,
-             'year_2': year_2, 'day_1': day_1, 'day_2': day_2, 'IGS': IGS, 'years': xrange(year_1, year_2 + 1)})
+             'year_2': year_2, 'day_1': day_1, 'day_2': day_2, 'IGS': IGS, 'years': xrange(year_1, year_2 + 1)},context_instance=RequestContext(request))
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def configEdit(request):
     checkUser(request)
-    return render_to_response("configEdit.html", {'fileList': fileList, 'username': username})
+    return render_to_response("configEdit.html", {'fileList': fileList, 'username': username},context_instance=RequestContext(request))
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def configEditDetail(request, filename):
     checkUser(request)
     os.chdir(SOFTWAREPATH + username + "/tables/")
@@ -555,14 +550,14 @@ def configEditDetail(request, filename):
     else:
         return HttpResponse("error")
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def readGamitLog(request, year):
     checkUser(request)
     os.chdir(SOFTWAREPATH + username + "/experiment/%s/" % year)
     f = linecache.getlines("sh_gamit.log")
     return f
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def saveConfigFile(request, filename):
     checkUser(request)
     configText = request.POST['editConfig']
@@ -572,7 +567,7 @@ def saveConfigFile(request, filename):
     f.close()
     return HttpResponse('successful')
 
-
+@user_passes_test(lambda u:u.is_authenticated)
 def resetConfigFile(request):
     checkUser(request)
     os.chdir(SOFTWAREPATH + username + "/tables/")
