@@ -173,7 +173,7 @@ INSTALLED_APPS = [
     "ResultView",
     "DataAnal",
     "Toolkit",
-    
+    "gunicorn"
     ]
 
 FIXTURE_DIRS = [

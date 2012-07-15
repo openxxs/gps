@@ -1,9 +1,9 @@
 from django.http import HttpResponse,Http404,HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login,logout
-import changeFrame
-import myDoy
-import  dataDownload 
+#from gps.utils import changeFrame
+#import myDoy
+#import  dataDownload 
 import os
 from gps.config import CONFIG
 

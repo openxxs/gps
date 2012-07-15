@@ -2,12 +2,12 @@
 #coding=utf-8
 from django.http import HttpResponse,Http404,HttpResponseRedirect
 from django.shortcuts import render_to_response
-from trunk.fileshandle import fileshandle
-from trunk.data_process import readDst
+#from trunk.fileshandle import fileshandle
+#from trunk.data_process import readDst
 import commands
 import os,sys,re,shutil,linecache,glob
 import time
-import getMax_Min
+#import getMax_Min
 
 #cwd=os.path.dirname(__file__)
 cwd=os.getcwd()

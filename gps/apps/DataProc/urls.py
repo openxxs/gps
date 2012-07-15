@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 
 
-urlpatterns =patterns('DataProc.views',
+urlpatterns =patterns('gps.apps.DataProc.views',
     (r'^DataProc/bulkProcess/(?P<year_1>\w{4})/(?P<day_1>\w{3})/(?P<year_2>\w{4})/(?P<day_2>\w{3})/(?P<IGS>\w{4})$','bulkProcess'),
     (r'^DataProc/baseline$','baseline'),
     (r'^DataProc/baselineProcess$','baselineProcess'),

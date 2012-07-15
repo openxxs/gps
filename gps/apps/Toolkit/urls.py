@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 
 
-urlpatterns +=patterns('Toolkit.views',
+urlpatterns =patterns('gps.apps.Toolkit.views',
     (r'^Toolkit/doy$','doy'),
     (r'^Toolkit/transformDoy$','transformDoy'),
     (r'^Toolkit/framework$','framework'),

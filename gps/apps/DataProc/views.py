@@ -10,24 +10,24 @@ from django.utils.log import logging
 import sys, datetime, json, commands, os, re, shutil, linecache, glob, copy, threading, time
 from subprocess import *
 
-import extractOscalaFile
-import getBaselineData
-import getAtmosphereData
-import getMbData
-
-import track
-import trackrt
+#import extractOscalaFile
+#import getBaselineData
+#import getAtmosphereData
+#import getMbData
+#
+#import track
+#import trackrt
 
 from gps.config import CONFIG
 from gps.utils import isLeap
 
 from forms import *
 
-import ion
-import modifyText
-import monthToDay
+#import ion
+#import modifyText
+#import monthToDay
 
-from dataDownload import intervel
+#from dataDownload import intervel
 
 
 error = ''
@@ -226,7 +226,7 @@ def atmosphereProcess(request):
     return HttpResponse("successful")
 
 
-@user_passes_test()
+@user_passes_test(lambda u:u.is_authenticated)
 def bulkProcess(request):
     error = ''
     username = request.user.username
@@ -463,7 +463,7 @@ def initProcess(request):
     return render_to_response("InitProcess.html", {'username': username, 'error': error})
 
 
-@user_passes_test()
+@user_passes_test(lambda u:u.is_authenticated)
 def tableStatistic(request):
     username = request.user.username
     os.chdir(SOFTWAREPATH + username + "/tables/")

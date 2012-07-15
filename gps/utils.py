@@ -33,7 +33,7 @@ def readFile(filename):
 #修改文件
 def writeFile(filename,lines):
 	try:
-		f = open(filename,"w")
+	    f = open(filename,"w")
 	    f.seek(0)
 	    f.write(lines)
 	    f.close()
@@ -49,13 +49,13 @@ def backupFile(filename):
      
 #还原为上次备份的文件
 def restoreFile(filename):
-	if os.path.isfile(filename+'.bak')
-    	cmd = "cp -f %s %s" % (filename+'.bak',filename)
-    	call(cmd,shell=True)
-    	return True
+    if os.path.isfile(filename+'.bak'):
+        cmd = "cp -f %s %s" % (filename+'.bak',filename)
+        call(cmd,shell=True)
+        return True
     else:
-    	log.error('Backup File not Found')
-    	return False
+        log.error('Backup File not Found')
+        return False
 
 #重置为初始文件
 # def reset(filename):

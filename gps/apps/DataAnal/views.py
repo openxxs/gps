@@ -7,9 +7,9 @@ import os,linecache,datetime
 from gps.utils import ymdToYd
 import commands
 from django.shortcuts import render_to_response
-import getMax_Min
+#import getMax_Min
 from django.utils.log import logging
-import customforms
+#import customforms
 
 cwd=os.path.dirname(__file__)
 #cwd=os.getcwd()
