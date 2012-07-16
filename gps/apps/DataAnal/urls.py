@@ -8,4 +8,6 @@ urlpatterns =patterns('gps.apps.DataAnal.views',
     (r'crosssectionAnalyse$','crosssectionAnalyse'),
     (r'expandrate$','expandrate'), 
     (r'expandrateAnalyse$','expandrateAnalyse'),
+    #(r'deltaS$','deltaS'),
+    #(r'deltaV$','deltaV'),
 )
