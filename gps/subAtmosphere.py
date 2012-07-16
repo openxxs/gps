@@ -5,36 +5,19 @@ from __future__ import division
 import os,glob
 import commands
 import shutil
-
-#cwd=os.path.dirname(__file__)
-cwd=os.getcwd()
+from gps.config import CONFIG
 
 start_string = 'ATM_ZEN'  
     
-def numberToDay(d):
-    if d < 10:
-        d_str = '00'+str(d)
-    elif d >= 10 and d < 100:
-        d_str = '0'+str(d)
-    elif d >= 100:
-        d_str = str(d)
-    return d_str
-
-def isLeap(year):
-    if (year%4==0 and year%100!=0) or (year%100==0 and year%400==0):
-        return 366
-    else:
-        return 365 
+def extractData(user):   
     
-def extractData():   
-    
-    filedir1=os.path.join(cwd,'exp2nd')
+    filedir1=os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd')
     #if os.path.isdir("%s/oscala_result" % filedir1) != True: 
         #没有生成oscala_result文件夹说明上一步extractFile操作没有完成应该提示用户无
         #文件可显示，请联系管理员重新生成
         #os.mkdir("%s/oscala_result" % filedir1)
-    filedir2 = os.path.join(cwd,'exp2nd/oscala_result')  #new file
-    filedir3 = os.path.join(cwd,'exp2nd/sub_atmosphere')
+    filedir2 = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/oscala_result')  #new file
+    filedir3 = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/sub_atmosphere')
         
     #每次生成文件时删除上次生成的文件
     if os.path.isdir("%s/temp" % filedir3) == True:  
@@ -78,7 +61,7 @@ def extractData():
     
     for l in fileList:
         
-        filepath = os.path.join(cwd,'exp2nd/oscala_result/%s' % l)
+        filepath = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/oscala_result/%s' % l)
         
         if os.path.isfile(filepath) == True :
             
@@ -100,8 +83,8 @@ def extractData():
                   
             os.popen(cmd)
 
-def createImage():
-    path = os.path.join(cwd,'exp2nd/sub_atmosphere/temp')
+def createImage(user):
+    path = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/sub_atmosphere/temp')
     filename =  os.path.join(path,"data.txt")
     #如果没有数据文件则不生成图片
     if os.path.isfile(filename) == True:

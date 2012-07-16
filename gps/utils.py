@@ -107,17 +107,92 @@ def getMbData(user,station):
             os.popen('cd %s ; mv %s %s ; cp -f %s %s' % (orgdir,orgmb,desmb,desmb,desdir))       
         os.popen('cd %s ; ./mbDataCollect.sh %s' % (desdir,s)) 
 
-def extractFile(start_y,start_d,end_y,end_d):
-    pass 
-
-def changeFrame():
-    pass
-
-def getBaselineData():
-    pass
-
-def getAtmosphereData():
-    pass
+def changeFrame(inputFrame,outputFrame,user):
+    filedir1 = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/toolkits/changeFrame/*.vel')
+    filedir2 = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/toolkits/changeFrame/result')
+    os.popen("rm %s/*.vel" % filedir2)
+    files = glob.glob(filedir1)
+    for f in files:
+        (filepath,filename) = os.path.split(f)
+        cmd = 'cvframe %s %s/%s %s %s' %(f,filedir2,filename,inframe,outframe)
+        os.system(cmd)
+    
+    zippath = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/toolkits/changeFrame')
+    zip_cmd = "cd %s ; zip -r data.zip result" % (zippath)
+    os.popen(zip_cmd)
 
 def numToDay(d):
     return "%03d"%d
+
+def dToMd(year,days):
+    y = int(year)
+    ds = int(days)
+    unleap = [0,31,28,31,30,31,30,31,31,30,31,30,31]
+    leap = [0,31,29,31,30,31,30,31,31,30,31,30,31]
+    m = 1
+    d = ds
+    i = 1
+    if extractOscalaFile.isLeap(y) == 366:
+        while (d>leap[i]):
+            d -= leap[i]
+            m +=1
+            i +=1 
+    else:
+        while (d>unleap[i]):
+            d -= unleap[i]
+            m +=1
+            i +=1   
+    return d
+
+class teqc(object):
+    """just for teqc"""
+    def readfile(rfile):
+        tmp = os.path.join(CONFIG.SOFTWAREPATH,'data_results/data_tmp')
+        os.popen(" awk '{if($1~/^SUM/) print $0}' %s > %s " % (rfile,tmp)) 
+        context=open(tmp,'r').read()    
+        li=context.split()
+        context= [li[12], li[14], li[15]]
+        return context
+
+from __future__ import division        
+class GetBaselineData(object):
+    """docstring for GetBaselineData"""
+    def getData(typename):
+        baseline_path = ''
+        if typename == 'baseline':
+            baseline_path=os.path.join(cwd,'exp2nd/baseline')
+            filepath = os.path.join(baseline_path,'baseline.dat')
+            if os.path.isfile(filepath):
+                os.remove(filepath)      
+        elif typename == 'batch':
+            baseline_path=os.path.join(cwd,'exp2nd/baseline_batch')  
+            
+        oscala_path=os.path.join(cwd,'exp2nd/oscala_%s/oscala.*' % typename)
+            
+        list_files = os.popen("dir %s" % oscala_path).read().split() 
+        list_files.sort()  #按时间顺序排列文件
+        
+        for l in list_files:
+            cmd = "awk '{if($2~/[0-9]X$/ && $3~/N/) print $0}' %s >> %s/baseline.dat" %(l,baseline_path)
+            os.popen(cmd)
+       
+def checktime(p):
+    pathlist = os.listdir(p)
+    extlist = ['csv','sum','out','LC','status','fatal','warning']
+    
+    for i in range(len(pathlist)):
+    
+        source=p+'/'+pathlist[i]
+        if os.path.isfile(source):
+            m=time.localtime(os.stat(source).st_ctime) #文件创建时间
+            
+            starttime = datetime.datetime.now() #当前时间
+            endtime = datetime.datetime(m.tm_year,m.tm_mon,m.tm_mday,m.tm_hour,m.tm_min,m.tm_sec)
+            
+            mydays=(starttime-endtime).days  #计算时间间隔
+            #print mydays
+            ext=source.split('.')[-1]  #文件后缀名
+            
+            if mydays>=1 and ext in extlist:
+                #一天清空一次
+                os.remove(source)

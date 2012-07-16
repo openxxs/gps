@@ -5,21 +5,17 @@ from __future__ import division
 import os,glob
 import commands
 
-
-#cwd=os.path.dirname(__file__)
-cwd=os.getcwd()
-
-def getData(typename):                             #extract data into baseline.data
+def getData(typename,user):                             #extract data into baseline.data
     baseline_path = ''
     if typename == 'baseline':
-        baseline_path=os.path.join(cwd,'exp2nd/baseline')
+        baseline_path=os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/baseline')
         filepath = os.path.join(baseline_path,'baseline.dat')
         if os.path.isfile(filepath):
             os.remove(filepath)      
     elif typename == 'batch':
-        baseline_path=os.path.join(cwd,'exp2nd/baseline_batch')  
+        baseline_path=os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/baseline_batch')  
         
-    oscala_path=os.path.join(cwd,'exp2nd/oscala_%s/oscala.*' % typename)
+    oscala_path=os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/oscala_%s/oscala.*' % typename)
         
     list_files = os.popen("dir %s" % oscala_path).read().split() 
     list_files.sort()  #按时间顺序排列文件

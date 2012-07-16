@@ -5,15 +5,15 @@ from teqc import readfile
 #from django.http import HttpResponse,HttpRequest
 import datetime
 import time
-
+from gps.config import CONFIG
 #cwd=os.path.dirname(__file__)        #获取当前路径，也就是站点的根目录 
-cwd=os.getcwd()
+cwd=CONFIG.SOFTWAREPATH
 
 def judge_mkdir(dirpath):
     if os.path.isdir(dirpath)==False:
         os.mkdir(dirpath)
-def fileshandle(request,sitecode):
-               
+        
+def fileshandle(request,sitecode):        
     op_result=True         #操作更新的结果，初始化为True
     firstpath=os.path.join(cwd,'data/%s/*.Z' % sitecode)        #用正则表达式，获取data文件夹下的所有.Z原始数据
     firstfiles=glob.glob(firstpath)

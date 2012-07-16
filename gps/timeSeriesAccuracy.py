@@ -3,13 +3,11 @@
 
 import os,glob
 import commands
-import extractOscalaFile
 import monthToDay
 import shutil
+from gps.config import CONFIG
+from gps.utils import isLeap
 
-
-#cwd=os.path.dirname(__file__) 
-cwd=os.getcwd()
 
 start=''
 end=''
@@ -20,6 +18,8 @@ eday=0
 
 state=''
 time=''
+
+from gps.config import CONFIG
 
 def getState(s):  #获取台站
     global state 
@@ -38,22 +38,18 @@ def getTimeSlot(start_y,start_m,start_d,end_y,end_m,end_d,now):  #获取时间�
     time=now
 
 def changeToFraction(y,d):
-    sum_day = extractOscalaFile.isLeap(y)
-    print sum_day
+    sum_day = isLeap(y)
     sum_time = y+float(d)/sum_day
-    print sum_time
     s_time = '%.5f' % sum_time
     #print s_time
     return s_time 
     
-def getData():   
-    global state,time
-    filedir1=os.path.join(cwd,'exp2nd')
-    filedir3 = os.path.join(cwd,'exp2nd/TimeSeries_accuracy')
+def getData(user):   
+    filedir1=os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd')
+    filedir3 = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/TimeSeries_accuracy')
    
     stime = changeToFraction(syear,sday)
     etime = changeToFraction(eyear,eday+1)
-    print syear,sday,eyear,eday,stime,etime
                 
     #每次生成临时文件
     if os.path.isdir("%s/temp" % filedir3) == True:  
@@ -67,12 +63,11 @@ def getData():
     cmd3 ="awk '{if($1>=%s && $1<%s) print $1,$5,0}' %s/%s > %s/temp/timeSeriesAccuracy%s.E" % (stime, etime, filedir3, state, filedir3,time)
     os.popen(cmd3)
         
-def createImage():
-    global state,syear,eyear,cwd,time
+def createImage(user):
     startTime = syear
     endTime = eyear+1
     postfix = ['N','E','U']
-    path = os.path.join(cwd,'exp2nd/TimeSeries_accuracy/temp')
+    path = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/TimeSeries_accuracy/temp')
     for p in postfix:
         filename =  os.path.join(path,'timeSeriesAccuracy'+time+'.%s' % p)
         #如果没有数据文件则不生成图片

@@ -11,16 +11,16 @@ import shutil
 from gps.config import CONFIG
 #基线处理中提取oscala文件需要实现两个功能：1.令用户选择从上次更新后的时间开始提取数据；2.允许用户重新生成所有的oscala文件（即删除现有的重新生成一遍）
 
-#cwd = os.path.dirname(__file__)
-cwd = CONFIG.SOFTWAREPATH
+#cwd+user = os.path.dirname(__file__)
+cwd= CONFIG.SOFTWAREPATH
 
 from gps.utils import numberToDay,isLeap
 
 # typename baseline atmosphere 不需要时间记录  创建临时文件夹 oscala_baseline oscala_atmosphere      
-def extractTempFile(start_year,start_day,end_year,end_day,typename): 
+def extractTempFile(start_year,start_day,end_year,end_day,typename,user): 
         
-    filedir1=os.path.join(cwd,'exp2nd')
-    filedir2=os.path.join(cwd,'exp2nd/oscala_%s' % typename)  #new file
+    filedir1=os.path.join(cwd+user,'exp2nd')
+    filedir2=os.path.join(cwd+user,'exp2nd/oscala_%s' % typename)  #new file
     if os.path.isdir(filedir2) == True:
         shutil.rmtree(filedir2)
     os.mkdir(filedir2) 
@@ -30,7 +30,7 @@ def extractTempFile(start_year,start_day,end_year,end_day,typename):
     end=end_day
         
     if start_year == end_year:
-        file_dir=os.path.join(cwd,'experiment/%s' % str(start_year))+'/'  #old file
+        file_dir=os.path.join(cwd+user,'experiment/%s' % str(start_year))+'/'  #old file
         print file_dir
             
         for d in range(start,end+1):
@@ -53,7 +53,7 @@ def extractTempFile(start_year,start_day,end_year,end_day,typename):
             else:
                 start=1
                 end = isLeap(y)
-            file_dir=os.path.join(cwd,'experiment/%s' % str(y))+'/'  #old file
+            file_dir=os.path.join(cwd+user,'experiment/%s' % str(y))+'/'  #old file
             for d in range(start,end+1):
                 d_str = numberToDay(d)
                 goal_dir=file_dir + d_str+'/'
@@ -66,7 +66,7 @@ def extractTempFile(start_year,start_day,end_year,end_day,typename):
 def extractFile(start_y,start_d,end_y,end_d):  
 
     
-    filepath = os.path.join(cwd,'exp2nd/time_record')+'/timeRecord.txt'
+    filepath = os.path.join(cwd+user,'exp2nd/time_record')+'/timeRecord.txt'
     print filepath
     
     ff = open(filepath,'r')
@@ -107,8 +107,8 @@ def extractFile(start_y,start_d,end_y,end_d):
         end = end_d
         
         
-        filedir1=os.path.join(cwd,'exp2nd')
-        filedir2=os.path.join(cwd,'exp2nd/oscala_batch')  #new file
+        filedir1=os.path.join(cwd+user,'exp2nd')
+        filedir2=os.path.join(cwd+user,'exp2nd/oscala_batch')  #new file
         print 'oscala dir', filedir2
         
         if os.path.isdir(filedir2) == False: 
@@ -116,7 +116,7 @@ def extractFile(start_y,start_d,end_y,end_d):
         
 
         if start_year == end_year:
-            file_dir=os.path.join(cwd,'experiment/%s' % str(start_year))+'/'  #old file
+            file_dir=os.path.join(cwd+user,'experiment/%s' % str(start_year))+'/'  #old file
             print file_dir
             
             for d in range(start,end+1):
@@ -139,7 +139,7 @@ def extractFile(start_y,start_d,end_y,end_d):
                 else:
                     start=1
                     end = isLeap(y)
-                file_dir=os.path.join(cwd,'experiment/%s' % str(y))+'/'  #old file
+                file_dir=os.path.join(cwd+user,'experiment/%s' % str(y))+'/'  #old file
                 for d in range(start,end+1):
                     d_str = numberToDay(d)
                     goal_dir=file_dir + d_str+'/'
