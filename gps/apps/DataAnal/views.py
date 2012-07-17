@@ -10,7 +10,7 @@ from django.shortcuts import render_to_response
 #import getMax_Min
 from django.utils.log import logging
 #import customforms
-
+from django.contrib.auth.decorators import user_passes_test
 from gps.config import CONFIG
 #cwd=os.getcwd()
 log = logging.getLogger('django')
