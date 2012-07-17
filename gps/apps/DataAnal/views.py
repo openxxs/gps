@@ -4,35 +4,31 @@
 from math import atan,sqrt,cos,sin
 import os,linecache,datetime
 #from sitesInfo import readInfo
-from gps.utils import ymdToYd
+from gps.utils import ymdToYd,isLeap
 import commands
 from django.shortcuts import render_to_response
 #import getMax_Min
 from django.utils.log import logging
 #import customforms
 
-cwd=os.path.dirname(__file__)
+from gps.config import CONFIG
 #cwd=os.getcwd()
 log = logging.getLogger('django')
 
-username=''
-error=''
-    
+@user_passes_test(lambda u:u.is_authenticated)
 def strain(request):
-    checkUser(request)
-    
-    velFilePath = os.path.join(cwd,'exp2nd/vel_result/result.vel')
-    strainFilePath = os.path.join(cwd,'exp2nd/strain_result/NCCGPS.dat')
+    user = request.user.username
+    velFilePath = os.path.join(CONFIG.SOFTWAREPATH,'exp2nd/vel_result/result.vel')
+    strainFilePath = os.path.join(CONFIG.SOFTWAREPATH,'exp2nd/strain_result/NCCGPS.dat')
     cmd = 'cp %s %s' % (velFilePath,strainFilePath)
     try:
         os.popen(cmd)
-        cmd='cd %s ; ./strain  ; ./drawstrain.sh ' % (os.path.join(cwd,'exp2nd/strain_result'))
+        cmd='cd %s ; ./strain  ; ./drawstrain.sh ' % (os.path.join(CONFIG.SOFTWAREPATH,'exp2nd/strain_result'))
         os.popen(cmd)        
     except Exception:
-        ei  = open(os.path.join(cwd,'info/!exp_errorInfo'),'a')
-        ei.write("%s: strain Processing by command strain wrong!\n" % datetime.datetime.now())   
-        ei.close()
-    return render_to_response("strain.html",{'username':username,'error':error,'file':'/exp2nd/strain_result/NCCGPS.dat','png':'/exp2nd/strain_result/strain.png'})
+        error = "Strain Processing by command strain wrong!"
+        log.exception(error)
+    return render_to_response("strain.html",{'username':username,'error':error,'file':'/'+user+'/exp2nd/strain_result/NCCGPS.dat','png':'/'+user+'/exp2nd/strain_result/strain.png'},context_instance=RequestContext(request))
         
 #读取站点数目
 #sitelist=readInfo(0)
@@ -46,57 +42,43 @@ def doubleSite(siteA,siteB):
         doublesite=siteB.upper()+'_'+siteA.upper()
     return doublesite
 
+@user_passes_test(lambda u:u.is_authenticated)
 def expandrate(request):
-    checkUser(request)
-    return render_to_response('expandrate.html',{'username':username,'error':error})
-    
+    return render_to_response('expandrate.html',{},context_instance=RequestContext(request))
+
+@user_passes_test(lambda u:u.is_authenticated)    
 def expandrateAnalyse(request):
     
-    site1 = request.GET['site1']
-    site2 = request.GET['site2']
-    site3 = request.GET['site3']
-    print site1,site2,site3
-    
-    '''
-    site1 = 'JPLM'
-    site2 = 'MIZU'
-    site3 = 'USUD'
-    '''
-    
+    site1 = request.POST.get("site1")
+    site2 = request.POST.get("site2")
+    site3 = request.POST.get("site3")
+   
     #生成两两组合格式的站点组合并存入circle列表中
     circle= [doubleSite(site1, site2), doubleSite(site1, site3), doubleSite(site2, site3)]
 
 
     #获取baseline.dat中的数据
-    
-    baselinefile = os.path.join(cwd,'exp2nd/baseline_batch/baseline.dat')
-    f = open(baselinefile,'r')
-    lines = f.readlines()            
-    f.close()
-    
+    user = request.user.username
+    baselinefile = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/baseline_batch/baseline.dat')
+
+    from gps.utils import readFile
+    lines = readFile(baselinefile)
     #从得到的列表中获取所需要的数据
     ls = [l.split() for l in lines]
-    print "--------------------------------"
-    print ls
     distance = [[l[1][:8],l[15],l[0]] for l in ls if l[0] in circle]  #l[15]为L的值
-    print distance
     length=len(distance)
-    print length                    #正常情况值应为3
+    #正常情况值应为3
     
     
-    #疑问：万一数据有问题时，比如某天中有7001_JPLM，7001_WLSN但是没有JPLM_WLSN那样就不能整除3了？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？
     a = [eval(distance[i][0]) for i in range(length) if i%3 == 0]
     b = [eval(distance[i][0]) for i in range(length) if i%3 == 1]
     c = [eval(distance[i][0]) for i in range(length) if i%3 == 2]
     p = [(a[i]+b[i]+c[i])/2 for i in range(length/3)]
     s = [[distance[3*i][0],sqrt(p[i]*(p[i]-a[i])*(p[i]-b[i])*(p[i]-c[i]))] for i in range(length/3)]
-    #对结果按时间排序并返回
-    #s.sort()
-    print s
-    
+
     #!!!!!!!!!!!!!!!!!!!!!未判断文件夹是否存在，因此该文件夹应提前准备好
     #将数据写入文件
-    expandratefile = os.path.join(cwd,'exp2nd/expandrate_result/expandrate.dat')
+    expandratefile = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/expandrate_result/expandrate.dat')
     ff = open(expandratefile,"w")
     #baseX = s[0][0]
     baseY = s[0][1]
@@ -120,28 +102,25 @@ def expandrateAnalyse(request):
     minY = "%d" % (float(y_scope[1]) - 10**(len(minY)-1))
     
     disY = float(maxY)/5.0
-    print disY
-    
     
     #画出图像 纵坐标有问题？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？
-    imagename = os.path.join(cwd,'exp2nd/expandrate_result/expandrate.pdf')
+    imagename = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/expandrate_result/expandrate.pdf')
     
     cmd = 'psxy %s -JX6.5/2.0 -R%s/%s/%s/%s -Ba0.5f0.1:"":/a%0.2ff5:"":WSen:."": -Ey0.02/2/255/0/0 -Sc0.03 -G255/0/0 -K -P -Y7i > %s' % (expandratefile,minX,maxX,minY,maxY,disY,imagename)
     
-    print cmd
-    
     commands.getstatusoutput(cmd)
     now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    png = 'exp2nd/expandrate_result/expandrate%s.png' % now
-    os.popen('convert -trim %s %s ; rm %s' % (imagename,os.path.join(cwd,png),imagename)) 
-    return render_to_response('png_expandRate.html',{'file':'/exp2nd/expandrate_result/expandrate.dat','png':'/'+png})
+    png = 'exp2nd/expandrate_result/%sexpandrate%s.png' %(user,now)
+    subprocess.call('cp %s %s'%(CONFIG.SOFTWAREPATH+user+'/'+png,CONFIG.SOFTWAREPATH+'static/img/%sexpandrate%s.png'%(user,now)),shell=True)
+    os.popen('convert -trim %s %s ; rm %s' % (imagename,os.path.join(CONFIG.SOFTWAREPATH+user,png),imagename)) 
+    return render_to_response('png_expandRate.html',{'file':'/exp2nd/expandrate_result/expandrate.dat','png':CONFIG.SOFTWAREPATH+'static/img/%sexpandrate%s.png'%(user,now)},context_instance=RequestContext(request))
   	
 	
 def crosssection(request):
-    checkUser(request)
-    return render_to_response('crosssection.html',{'username':username,'error':error})
+    return render_to_response('crosssection.html',{},context_instance=RequestContext(request))
     
-def crosssectionAnalyse(request):  #num表示线
+def crosssectionAnalyse(request): #num表示线
+    user = request.user.username
     num=int(request.GET['num'])-1
     #num=1
     x= [[-1.557911456, 207.016637], [0.6773785407, -56.61408148], [0.9467484395, -87.18706211],
@@ -159,7 +138,7 @@ def crosssectionAnalyse(request):  #num表示线
     
     #读取速度场结果文件来获取站点+经度+纬度+VE+VN
     
-    siteinfo = os.path.join(cwd,'exp2nd/vel_result/result.vel')
+    siteinfo = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/vel_result/result.vel')
     #siteinfo = os.path.join(cwd,'exp2nd/vel_result/vel1.result')
     f = open(siteinfo,'r')
     lines = f.readlines()            
@@ -171,7 +150,7 @@ def crosssectionAnalyse(request):  #num表示线
     distance.sort()
     
     #将数据写入文件
-    parallel_filepath = os.path.join(cwd,'exp2nd/crosssection_result/parallel.dat')
+    parallel_filepath = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/crosssection_result/parallel.dat')
     
     ff = open(parallel_filepath,"w")
     maxParallelY = -1
@@ -204,11 +183,8 @@ def crosssectionAnalyse(request):  #num表示线
     
     disX_parallel = float(maxX_parallel)/5.0
     disY_parallel = float(maxY_parallel)/5.0
-    print disX_parallel,disY_parallel
     
-    
-    
-    vertical_filepath = os.path.join(cwd,'exp2nd/crosssection_result/vertical.dat')
+    vertical_filepath = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/crosssection_result/vertical.dat')
     
     ff = open(vertical_filepath,"w")
     maxverticalY=-1
@@ -240,7 +216,6 @@ def crosssectionAnalyse(request):  #num表示线
     
     disX_vertical = float(maxX_vertical)/3.0
     disY_vertical = float(maxY_vertical)/3.0
-    print disX_vertical,disY_vertical
     
     files=[]
     pngs=[]
@@ -248,7 +223,7 @@ def crosssectionAnalyse(request):  #num表示线
     parallel = 'exp2nd/crosssection_result/parallel'
     vertical = 'exp2nd/crosssection_result/vertical'
     #==================================绘制水平方向图=====================================
-    filename= os.path.join(cwd,parallel)
+    filename= os.path.join(CONFIG.SOFTWAREPATH+user,parallel)
     imagename = filename+now+'.pdf'
     pngname = filename+now+'.png'
     #print 'psxy %s -JX10/5 -R%d/%d/%d/%d -Ba200f50:"":/a100f25:"":WSen:."": -Ey0.02/2/255/0/0 -Sc0.03 -G255/0/0 -K -P -Y7i > %s' % (parallel_filepath,int(distance[0][0]),int(distance[-1][0]),int(minParallelY),int(maxParallelY),imagename)
@@ -264,7 +239,7 @@ def crosssectionAnalyse(request):  #num表示线
     
     #==================================绘制垂直方向图=======================================
     
-    filename= os.path.join(cwd,vertical)
+    filename= os.path.join(CONFIG.SOFTWAREPATH+user,vertical)
     imagename = filename+now+'.pdf'
     pngname = filename+now+'.png'
     vertical_cmd = 'psxy %s -JX6.5/2.0 -R%s/%s/%s/%s -Ba%0.2ff5:"":/a%0.2ff5:"":WSen:."": -Ey0.02/2/255/0/0 -Sc0.03 -G255/0/0 -K -P -Y7i > %s' % (vertical_filepath,minX_vertical,maxX_vertical,minY_vertical,maxY_vertical,disX_vertical,disY_vertical,imagename)
@@ -278,13 +253,7 @@ def crosssectionAnalyse(request):  #num表示线
     files.append('/'+vertical+'.dat')
     pngs.append('/'+vertical+now+'.png')
     
-    return render_to_response('png_crosssection.html',{'files':files,'pngs':pngs})
-
-def isLeap(year):
-    if (year%4==0 and year%100!=0) or (year%400==0):
-        return 366
-    else:
-        return 365
+    return render_to_response('png_crosssection.html',{'files':files,'pngs':pngs},context_instance=RequestContext(request))
     
 def deltaV(request):
     if request.method == "GET":
@@ -395,7 +364,7 @@ def deltaV(request):
 	    os.popen("mv exp2nd/vel_result/vel.png exp2nd/vel_result/vel%s.png"%now)
 	    png.append("exp2nd/vel_result/vel%s.png"%now)
     print png
-    return render_to_response('deltaV.html',{'png':png})
+    return render_to_response('deltaV.html',{'png':png},context_instance=RequestContext(request))
 
 def drawsomething(year_1,year_2,day_1,day_2):
     for t in range(year_1,year_2+1):

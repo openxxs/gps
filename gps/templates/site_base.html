@@ -180,10 +180,12 @@
             </ul>
           </div>
         </div>
-        </div>
+
+        {% block account_bar %}{% include "_account_bar.html" %}{% endblock %}
+      </div>
     </div>
     </div>
-    {% block account_bar %}{% include "_account_bar.html" %}{% endblock %}
+    
 {% endblock nav %}
 {% block footer %}
 <div class="legal">

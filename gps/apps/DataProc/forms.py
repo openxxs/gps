@@ -7,7 +7,7 @@ my_messages={'required':_(u'输入不能为空')}
 IGS = (
 	('IGSF','IGSF'),
 	('IGSR','IGSR'),
-	('IGSU','IGSU')
+	('IGSU','IGSU'),
 	)
 
 class ProcessForm(forms.Form):

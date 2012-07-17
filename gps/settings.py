@@ -184,12 +184,12 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
 EMAIL_BACKEND = "mailer.backend.DbBackend"
 
-ACCOUNT_OPEN_SIGNUP = True
-ACCOUNT_USE_OPENID = True
-ACCOUNT_REQUIRED_EMAIL = True
-ACCOUNT_EMAIL_VERIFICATION = True
-ACCOUNT_EMAIL_AUTHENTICATION = True
-ACCOUNT_UNIQUE_EMAIL = EMAIL_CONFIRMATION_UNIQUE_EMAIL = True
+ACCOUNT_OPEN_SIGNUP = False
+ACCOUNT_USE_OPENID = False
+ACCOUNT_REQUIRED_EMAIL = False
+ACCOUNT_EMAIL_VERIFICATION = False
+ACCOUNT_EMAIL_AUTHENTICATION = False
+ACCOUNT_UNIQUE_EMAIL = EMAIL_CONFIRMATION_UNIQUE_EMAIL = False
 
 AUTHENTICATION_BACKENDS = [
     "pinax.apps.account.auth_backends.AuthenticationBackend",
@@ -213,7 +213,7 @@ try:
 except ImportError:
     pass
 
-SITE_NAME = 'GPS'
+SITE_NAME = 'GPS数据处理分析平台'
 
 LOGGING = {  
     'version': 1,  

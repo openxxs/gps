@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 #coding=utf-8
+from __future__ import division 
 import functools,os,linecache
 from subprocess import call
 from django.utils.log import logging
@@ -153,8 +154,7 @@ class teqc(object):
         li=context.split()
         context= [li[12], li[14], li[15]]
         return context
-
-from __future__ import division        
+       
 class GetBaselineData(object):
     """docstring for GetBaselineData"""
     def getData(typename):
