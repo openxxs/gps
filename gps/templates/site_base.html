@@ -76,13 +76,19 @@
                 </a>
                 <ul id="DataAnal" class="dropdown-menu">
                   <li>
-                    <a href="/DataAnal/crustalStrain">地壳应变状态</a>
+                    <a href="/DataAnal/strain">地壳应变状态</a>
                   </li>
                   <li>
-                    <a href="/DataAnal/faultActivity">断层活动性</a>
+                    <a href="/DataAnal/crosssection">速度剖面</a>
                   </li>
                   <li>
-                    <a href="/DataAnal/smallscalePlateMotion">小尺度板块运动</a>
+                    <a href="/DataAnal/expandrate">区域面膨胀率</a>
+                  </li>
+                  <li>
+                    <a href="/DataAnal/deltaS">应变状态变化</a>
+                  </li>
+                  <li>
+                    <a href="/DataAnal/deltaV">速度场变化</a>
                   </li>
                   <li class="divider"></li>
                   <li>
@@ -179,9 +185,8 @@
               </li>
             </ul>
           </div>
-        </div>
-
         {% block account_bar %}{% include "_account_bar.html" %}{% endblock %}
+        </div>
       </div>
     </div>
     </div>

@@ -22,6 +22,7 @@ class ProcessForm(forms.Form):
 			StartYear = int(StartYear)
 		except:
 			raise forms.ValidationError(_('输入的日期格式不正确'))
+		return StartYear
 
 	def clean_StartDay(self):
 		StartDay = self.data.get('StartDay')
@@ -29,6 +30,7 @@ class ProcessForm(forms.Form):
 			StartDay = int(StartDay)
 		except:
 			raise forms.ValidationError(_('输入的日期格式不正确'))
+		return StartDay
 
 	def clean_EndYear(self):
 		EndYear = self.data.get('EndYear')
@@ -36,6 +38,7 @@ class ProcessForm(forms.Form):
 			EndYear = int(EndYear)
 		except:
 			raise forms.ValidationError(_('输入的日期格式不正确'))
+		return EndYear
 
 	def clean_EndDay(self):
 		EndDay = self.data.get('EndDay')
@@ -43,6 +46,7 @@ class ProcessForm(forms.Form):
 			EndDay = int(EndDay)
 		except:
 			raise forms.ValidationError(_('输入的日期格式不正确'))
+		return EndDay
 
 class BulkProcessForm(ProcessForm):
     IGSParameters = forms.ChoiceField(required=True,choices=IGS)

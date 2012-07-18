@@ -7,40 +7,18 @@ from django.shortcuts import render_to_response
 import commands
 import os,sys,re,shutil,linecache,glob
 import time
+from gps.config import CONFIG
+from models import Site,Img
 #import getMax_Min
 
 #cwd=os.path.dirname(__file__)
-cwd=os.getcwd()
+cwd=CONFIG.SOFTWAREPATH
 
 png1=''
 png2=''
 png3=''
 png4=''
 
-username=''
-error=''
-
-def checkUser(request):
-    global username,error
-    if 'error' in request.GET:
-        error=request.GET['error']
-    else:
-        error=''
-    if request.user.is_authenticated():
-        username=request.user
-    else:
-        username=''
-    print username,error
-
-class Site:                #站点信息类
-    def __init__(self,_code,_name,_longitude,_latitude,_intro="",_imgList=[]):
-        self.code=_code
-        self.name=_name
-        self.longitude=_longitude
-        self.latitude=_latitude
-        self.intro=_intro
-        self.imgList=_imgList
-                
 def siteSearch(request):
     #sitelist=readDst()
     Dst=request.GET['siteCode']
@@ -81,50 +59,19 @@ def rw_count(sitecode):     #更新和读取站点对应的count值
     return count
 
 def sitesList(request):      #台站列表
-    sitelist=readInfo(0)
-    checkUser(request)
-    
-    p=open(cwd+"/t","w+")
-    p.write(cwd)
-    p.close()
-    return render_to_response("siteList.html",{'siteList':sitelist,'username':username,'error':error})
+    sitelist=Site.objects.all()
+    return render_to_response("siteList.html",{'siteList':sitelist},context_instance=RequestContext(request))
     
 def dataManaging(request):  #台站质量
-    sitelist=readInfo(0)
-    checkUser(request)
-    return render_to_response("dataManaging.html",{'siteList':sitelist,'username':username,'error':error})
-
-def log(request):           #台站信息更新及log
-    logList=[]
-    logfilepath = os.path.join(cwd,'log/*.log')
-    logfiles = glob.glob(logfilepath)
-    '''p_logInfo=open(os.path.join(cwd,'log/date.txt'),'r');
-    for log in p_logInfo:
-        logList.append(log[0:-1])
-    p_logInfo.close()'''
-    for logfile in logfiles:
-        (filepath,filename)=os.path.split(logfile)
-        logList.append(filename)
-    checkUser(request)
-    return render_to_response("log.html",{'logList':logList,'username':username,'error':error})
+    return render_to_response("dataManaging.html",{'siteList':sitelist},context_instance=RequestContext(request))
 
 def Map(request):           #台站分布
-    checkUser(request)
-    return render_to_response("map.html",{'username':username,'error':error})
+    return render_to_response("map.html",{},context_instance=RequestContext(request))
 
 def sitebase(request,sitecode):     #台站列表中的某个台站
-    p_siteInfo=open(os.path.join(cwd,'site_list/%s/information' % sitecode),'r')
-    siteInfo=p_siteInfo.read().split()
-    p_siteInfo.close()
-
-    p_siteIntro=open(os.path.join(cwd,'site_list/%s/introduction' % sitecode),'r')
-    siteIntro=p_siteIntro.read()
-    site_pc=os.listdir(os.path.join(cwd,'site_list/%s/pictures' % sitecode))
-
-    #site=Site(temp['code'],temp['name'],temp['longitude'],temp['latitude'],siteIntro,site_pc)
-    site=Site(siteInfo[0],siteInfo[1],siteInfo[2],siteInfo[3],siteIntro,site_pc)
-    checkUser(request)
-    return render_to_response("siteBase.html",{'site':site,'username':username,'error':error})
+    siteList = Site.objects.filter(Code=sitecode)
+    site = siteList.count() and siteList[0] or False
+    return render_to_response("siteBase.html",{'site':site},context_instance=RequestContext(request))
     
         
 def update(request,sitecode):
@@ -135,24 +82,24 @@ def update(request,sitecode):
     if is_success:
         update_singal(sitecode)
         return render_to_response('data_update.html',{'png1':png1,'png2':png2,
-                                  'png3':png3,'png4':png4,'error':False})
+                                  'png3':png3,'png4':png4,'error':False},context_instance=RequestContext(request))
     else:
         update_singal(sitecode)
         return render_to_response('data_update.html',{'png1':png1,'png2':png2,
-                                  'png3':png3,'png4':png4,'error':True})
+                                  'png3':png3,'png4':png4,'error':True},context_instance=RequestContext(request))
 
 def update_All(request):
-    sitelist=readInfo(1)
-    print sitelist
+    sitelist=Site.objects.all()
     _request=request
     for sitecode in sitelist :
-        if len(sitecode)==4 :
-            is_success = fileshandle(_request,sitecode)
+        if len(sitecode.Code)==4 :
+            is_success = fileshandle(_request,sitecode.Code)
             if is_success:
                 time.sleep(2)
-                update_singal(sitecode)
+                update_singal(sitecode.Code)
     '''  台站信息更新日志  '''
     return HttpResponse("successful")
+
 def update_singal(sitecode):
     global png1,png2,png3,png4
     count=rw_count(sitecode)
@@ -181,7 +128,7 @@ def updateInfo(request):
     except IOError:
         errorInfo_file.write("访问returnsInfo.txt时候错误\n")
         info.append("读取更新信息失败，访问信息文件是错误，请联系管理员")
-    return render_to_response('update.html',{'info':info}) 
+    return render_to_response('update.html',{'info':info},context_instance=RequestContext(request)) 
     
       
 def data(request,sitecode):
@@ -198,16 +145,11 @@ def data(request,sitecode):
     siteInfo=p_siteInfo.read().split()
     p_siteInfo.close()
     site=Site(siteInfo[0],siteInfo[1],siteInfo[2],siteInfo[3])
-    print site
-    checkUser(request)
     return render_to_response("data.html",{'png1':png1,'png2':png2,
-                                    'png3':png3,'png4':png4,'site':site,'username':username,'error':error})
+                                    'png3':png3,'png4':png4,'site':site},context_instance=RequestContext(request))
 
 def updatephoto(png,sitecode,fileName):
-
-    errorInfo_file=open(os.path.join(cwd,'info/errorInfo.txt'),'a') 
     obfile = os.path.join(cwd,'data_results/%s/%s' % (sitecode,fileName))
-    print obfile
     scope = getMax_Min.getMax_MinFromFile(obfile,[1,2])
     times_scope = scope[0].split()
     value_scope = scope[1].split()
@@ -222,16 +164,14 @@ def updatephoto(png,sitecode,fileName):
     else:
         minValue = "%d" % minv
     dis = float(maxValue)/5.0
-    print dis
     cmd = 'psxy %s  -JX6.5/2.0 -R%s/%s/%s/%s -Ba0.5f0.1:"":/a%0.2ff5:"":WSen:."": -Ey0.02/2/255/0/0 -Sc0.03 -G255/0/0 -K -P -Y7i >%s' % (obfile,minTime,maxTime,minValue,maxValue,dis,os.path.join(cwd,'temp.pdf'))
-    print cmd
     outinfo=commands.getstatusoutput(cmd) 
                                           
     if outinfo[0]!=0 or outinfo[1]:
-        errorInfo_file.write('errors pdf \n')
+        log.error('errors pdf \n')
     outinfo=commands.getstatusoutput('convert -trim %s %s' % (os.path.join(cwd,'temp.pdf'),os.path.join(cwd,png[1:])))
     if outinfo[0]!=0 or outinfo[1]:
-        errorInfo_file.write('errors png \n')
+        log.error('errors png \n')
     else:    
         commands.getoutput('rm %s' % os.path.join(cwd,'temp.pdf'))
 # Create your views here.

@@ -76,10 +76,10 @@ def createImage(user):
             commands.getstatusoutput('psxy %s -JX6.5/2.0 -R%d/%d/-10/10 -Ba0.5f0.1:"":/a10f5:"":WSen:."": -Ey0.02/2/255/0/0 -Sc0.03 -G255/0/0 -K -P -Y7i > %s' % (filename,startTime,endTime,imagename))    
             os.popen('convert -trim %s %s' %(imagename,filename+'.png')) 
 
-def timeSeriesAccuracy(s,s_y,s_m,s_d,e_y,e_m,e_d,now):
+def timeSeriesAccuracy(s,s_y,s_m,s_d,e_y,e_m,e_d,now,user):
     getState(s)
     getTimeSlot(s_y,s_m,s_d,e_y,e_m,e_d,now)
-    getData()
+    getData(user)
     createImage()
     
 if __name__ == '__main__':

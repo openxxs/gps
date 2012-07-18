@@ -19,7 +19,7 @@ import gps.track
 import gps.trackrt
 
 from gps.config import CONFIG
-from gps.utils import isLeap
+from gps.utils import isLeap,readFile,writeFile
 
 from forms import *
 
@@ -38,27 +38,22 @@ SOFTWAREPATH = CONFIG.SOFTWAREPATH
 RINEXPATH = CONFIG.RINEXPATH
 fileList = CONFIG.fileList.split('%%')
 downloadList = CONFIG.downloadList.split('%%')
+refStation = CONFIG.refStation
 
 cwd = SOFTWAREPATH
 
-year_1       = 0
-day_1        = 0
-year_2       = 0
-day_2        = 0
-ext          = []
-dst          = []
 #trackRT部分
-tasksNum     = 0
-tasks        = []
-is_available = 1
-IGS          = 'IGSF'
 
+tasksNum = 0
+tasks    = []
 @user_passes_test(lambda u:u.is_authenticated)
 def datatrack(request):
     return render_to_response("datatrack.html", {'username': username, 'error': error})
 
 
 class trackRTThread(threading.Thread): #The timer class is derived from the class threading.Thread
+    #dst.ext有问题
+
     def __init__(self, threadname, dst, ext):
         threading.Thread.__init__(self)
         self.dst_station = dst
@@ -150,76 +145,55 @@ def trackRTView(request):
 
 @user_passes_test(lambda u:u.is_authenticated)
 def datatrackrt(request):
-    return render_to_response("datatrackrt.html", {'username': username, 'error': error},context_instance=RequestContext(request))
+    return render_to_response("datatrackrt.html", {},context_instance=RequestContext(request))
 
 @user_passes_test(lambda u:u.is_authenticated)
 def atmosphericDelay(request):
-    return render_to_response("atmosphericDelay.html", {'username': username, 'error': error,
-                                                        'refStation': 'bjfs guam irkt kit3 lhaz pimo pol2 shao twtf tnml tskb urum wuhn'},context_instance=RequestContext(request))
+    return render_to_response("atmosphericDelay.html", {'refStation': refStation},context_instance=RequestContext(request))
 
 @user_passes_test(lambda u:u.is_authenticated)
 def baseline(request):
-    return render_to_response("baseline.html", {'username': username, 'error': error,
-                                                'refStation': 'bjfs guam irkt kit3 lhaz pimo pol2 shao twtf tnml tskb urum wuhn'},context_instance=RequestContext(request))
+    return render_to_response("baseline.html", {'refStation': refStation},context_instance=RequestContext(request))
 
-@user_passes_test(lambda u:u.is_authenticated)
-def ionosphere(request):
-    start_y = request.GET('startYear')
-    start_d = request.GET('startDay')
-    end_y = request.GET('endYear')
-    end_d = request.GET('endYear')
-    ion.ion(start_y, start_d, end_y, end_d)
-
-    checkUser(request)
-    return render_to_response("ionosphere.html", {'username': username, 'error': error},context_instance=RequestContext(request))
 
 @user_passes_test(lambda u:u.is_authenticated)
 def highFrequencyData(request):
-    checkUser(request)
-    return render_to_response("highFrequencyData.html", {'username': username, 'error': error},context_instance=RequestContext(request))
+    return render_to_response("highFrequencyData.html", {},context_instance=RequestContext(request))
 
-@user_passes_test(lambda u:u.is_authenticated)
 def readDst(prj):
     global dst
     f = prj + "/tables/sites.defualts"
     line = linecache.getlines(f)
-    for i in xrange(32, len(line) + 1):
-        dst.append(line.split()[0])
+    for l in xrange(32, len(line) + 1):
+        dst.append(l.split()[0])
     return dst
 
 @user_passes_test(lambda u:u.is_authenticated)
-def ionosphere(request):
-    checkUser(request)
-    return render_to_response("ionosphere.html", {'username': username, 'error': error},context_instance=RequestContext(request))
-
-@user_passes_test(lambda u:u.is_authenticated)
-def ionosphereProcess(request):
-    start_year = request.GET['startYear']
-    start_day = request.GET['startDay']
-    end_year = request.GET['endYear']
-    end_day = request.GET['endDay']
-    log.info(start_year, start_day, end_year, end_day)
-    ion.ion(start_year, start_day, end_year, end_day)
-    return HttpResponse("successful")
-
-@user_passes_test(lambda u:u.is_authenticated)
 def baselineProcess(request):
-    initParameter(request, "")
-    showParameter()
-    Init_experiment()
-    Gamitdata_analysing()
-    extractOscalaFile.extractTempFile(year_1, day_1, year_2, day_2, 'baseline')
-    getBaselineData.getData('baseline')
+    username = request.user.username
+    form = ProcessForm()
+    if request.method == 'POST':
+        form = ProcessForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            year_1, day_1, year_2, day_2 = int(data['StartYear']), int(data['StartDay']), int(
+                data['EndYear']), int(data['EndDay'])]
+            extractOscalaFile.extractTempFile(year_1, day_1, year_2, day_2, 'baseline',username)
+            getBaselineData.getData('baseline',username)
     return HttpResponse("successful")
 
 @user_passes_test(lambda u:u.is_authenticated)
 def atmosphereProcess(request):
-    initParameter(request, "true")
-    showParameter()
-    Init_experiment()
-    Gamitdata_analysing()
-    extractOscalaFile.extractTempFile(year_1, day_1, year_2, day_2, 'atmosphere')
-    getAtmosphereData.getData('atmosphere')
+    username = request.user.username
+    form = ProcessForm()
+    if request.method == 'POST':
+        form = ProcessForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            year_1, day_1, year_2, day_2 = int(data['StartYear']), int(data['StartDay']), int(
+                data['EndYear']), int(data['EndDay'])]
+            extractOscalaFile.extractTempFile(year_1, day_1, year_2, day_2, 'atmosphere')
+            getAtmosphereData.getData('atmosphere',username)
     return HttpResponse("successful")
 
 
@@ -281,32 +255,6 @@ def modifyConfigFile(request):
     elif modifyType == 'restore':
         modifyText.restore()
         return HttpResponse('successful')
-
-@user_passes_test(lambda u:u.is_authenticated)
-def showParameter():
-    log.info(dst, year_1, day_1, year_2, day_2, ext)
-    print dst, year_1, day_1, year_2, day_2, ext
-
-@user_passes_test(lambda u:u.is_authenticated)
-def initParameter(request, bAlldst):
-    global year_1, day_1, year_2, day_2, dst_station, ext, dst, is_available, IGS
-    log.info("get and split parameters")
-    is_available = 0
-    year_1 = (int)(request.POST['startYear'])
-    day_1 = (int)(request.POST['startDay'])
-    year_2 = (int)(request.POST['endYear'])
-    day_2 = (int)(request.POST['endDay'])
-    ext_station = request.POST['extra_station'].lower()
-    IGS = request.POST['IGSparamater']
-    #dst_station =   request.GET['dst_station']
-    if(bAlldst):
-        dst = readDst()
-        det = [d.lower() for d in dst]
-    else:
-        dst = request.POST['des_station'].lower()
-        dst = dst.split()
-    ext = ext_station.split()
-    log.info("successfully splited parameters")
 
 @user_passes_test(lambda u:u.is_authenticated)
 def Init_experiment(prj, year_1, year_2):
@@ -451,14 +399,8 @@ def vel_process(prj):
         os.popen(cmd)
     except Exception:
         error = "%s: Processing by command velDataCollect.sh wrong!\n" % datetime.datetime.now()
-        log.info("%s: Processing by command velDataCollect.sh wrong!\n" % datetime.datetime.now())
+        log.error("%s: Processing by command velDataCollect.sh wrong!\n" % datetime.datetime.now())
     return error
-
-@user_passes_test(lambda u:u.is_authenticated)
-def initProcess(request):
-    checkUser(request)
-    return render_to_response("InitProcess.html", {'username': username, 'error': error})
-
 
 @user_passes_test(lambda u:u.is_authenticated)
 def tableStatistic(request):
@@ -467,17 +409,6 @@ def tableStatistic(request):
     #"soltab.*","luntab.*","nutabl.*",
     filestatus = [{'name': filen, 'time': time.ctime(os.path.getmtime(filen))} for filen in fileList]
     return render_to_response("tableStatistic.html", {'fileList': filestatus},context_instance=RequestContext(request))
-
-@user_passes_test(lambda u:u.is_authenticated)
-def readfile(filepath):
-    f = open(filepath)
-    result = ""
-    line = f.readline()
-    while line:
-        result += line
-        line = f.readline()
-    f.close
-    return result
 
 @user_passes_test(lambda u:u.is_authenticated)
 def tableStatisticDetail(request, filename):
@@ -490,21 +421,20 @@ def tableStatisticDetail(request, filename):
         [os.popen("mv %s %s.bak;wget -o %s.log ftp://garner.ucsd.edu//archive/garner/gamit/tables/%s" % (
         files, files, files, files)) for files in fileList]
         for filen in fileList:
-            result += readfile(GAMITTABLE + filen + ".log")
+            result += readFile(GAMITTABLE + filen + ".log")
     elif filename in fileList:
         os.popen("cd %s ;mv %s %s.bak;wget -o %s.log ftp://garner.ucsd.edu//archive/garner/gamit/tables/%s" % (
         GAMITTABLE, filename, filename, filename, filename))
         os.chdir(SOFTWAREPATH + username + "/tables/")
         os.popen("mv %s %s.bak;wget -o %s.log ftp://garner.ucsd.edu//archive/garner/gamit/tables/%s" % (
         filename, filename, filename, filename))
-        result += readfile(GAMITTABLE + filename + ".log")
+        result += readFile(GAMITTABLE + filename + ".log")
     else:
         result = "error"
     return HttpResponse(result)
 
 @user_passes_test(lambda u:u.is_authenticated)
 def dataStatisticDetail(request):
-    checkUser(request)
     usern = username.username
     os.chdir(SOFTWAREPATH + usern + "/experiments/")
     os.path.exists("rinex") and True or os.mkdir("rinex")
@@ -536,42 +466,32 @@ def dataStatisticDetail(request):
 
 @user_passes_test(lambda u:u.is_authenticated)
 def configEdit(request):
-    checkUser(request)
     return render_to_response("configEdit.html", {'fileList': fileList, 'username': username},context_instance=RequestContext(request))
 
 @user_passes_test(lambda u:u.is_authenticated)
 def configEditDetail(request, filename):
-    checkUser(request)
+    username = request.user.username
     os.chdir(SOFTWAREPATH + username + "/tables/")
     if filename in fileList:
-        f = open(filename, "r")
-        f.seek(0)  #每次从文件头开始读
-        lines = f.read()
-        f.close()
-        return HttpResponse(lines)
-    else:
-        return HttpResponse("error")
+        return HttpResponse(readFile(filename))
 
 @user_passes_test(lambda u:u.is_authenticated)
 def readGamitLog(request, year):
-    checkUser(request)
+    username = request.user.username
     os.chdir(SOFTWAREPATH + username + "/experiment/%s/" % year)
     f = linecache.getlines("sh_gamit.log")
     return f
 
 @user_passes_test(lambda u:u.is_authenticated)
 def saveConfigFile(request, filename):
-    checkUser(request)
+    username = request.user.username
     configText = request.POST['editConfig']
-    f = open(SOFTWAREPATH + username + "/tables/" + filename, "w")
-    f.seek(0)
-    f.write(configText)
-    f.close()
+    writeFile(SOFTWAREPATH + username + "/tables/" + filename,configText)
     return HttpResponse('successful')
 
 @user_passes_test(lambda u:u.is_authenticated)
 def resetConfigFile(request):
-    checkUser(request)
+    username = request.user.username
     os.chdir(SOFTWAREPATH + username + "/tables/")
     [os.popen("rm %s;cp %s.bak %s" % (filename, filename, filename)) for filename in fileList]
     return true

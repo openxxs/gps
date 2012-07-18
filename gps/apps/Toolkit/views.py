@@ -11,8 +11,7 @@ from gps.config import CONFIG
 SOFTWAREPATH = CONFIG.SOFTWAREPATH
  
 def doy(request):
-    checkUser(request)
-    return render_to_response("doy.html",{'username':username,'error':error})
+    return render_to_response("doy.html",{},context_instance=RequstContext(request))
     
 def isDigit(org):
     return ''.join(org.split()).isdigit()
@@ -27,6 +26,8 @@ def transformDoy(request):
     gpsWeek=''
     decimalYear=''
 
+    if request.method=="POST":
+        
     if(isDigit(dateYear) and isDigit(dateMonth) and isDigit(dateDay)):      
         doyResult =myDoy.doy([dateYear,dateMonth,dateDay])
         doyYear = dateYear
@@ -66,12 +67,12 @@ def transformDoy(request):
         gpsWeek = doyResult[1]
     decimalYear = doyResult[2]
 
-    return render_to_response("doy.html",dict(locals(),**{'username':username,'error':error}))
+    return render_to_response("doy.html",dict(locals(),**{'username':username,'error':error}),context_instance=RequstContext(request))
     
     
 def framework(request):
     checkUser(request)  
-    return render_to_response("framework.html",{'username':username,'error':error})
+    return render_to_response("framework.html",{'username':username,'error':error},context_instance=RequstContext(request))
     
 def changeFrames(request):
     orgFrame = request.GET['orgFrame']
@@ -81,7 +82,7 @@ def changeFrames(request):
     return HttpResponse("change succeed")
 def dataDownloads(request):
     checkUser(request)
-    return render_to_response("dataDownload.html",{'username':username,'error':error})
+    return render_to_response("dataDownload.html",{'username':username,'error':error},context_instance=RequstContext(request))
     
 def dataDownloadProcess(request):
     downloadType = request.GET['downloadType']

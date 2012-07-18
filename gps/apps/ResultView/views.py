@@ -29,18 +29,6 @@ stn=''
 trend=''
 source=''
 
-
-def checkUser(request):
-    global username,error
-    if 'error' in request.GET:
-        error=request.GET['error']
-    else:
-        error=''
-    if request.user.is_authenticated():
-        username=request.user
-    else:
-        username=''
-    print username,error
         
 def initParameter(request):
     global yr1,mon1,day1,yr2,mon2,day2,trend,stn
@@ -68,33 +56,27 @@ def showParameter():
 
     
 def timeSeries(request):
-    dstList=readDst()
-    checkUser(request)
-    return render_to_response("timeSeries.html",{'dstList':dstList,'username':username,'error':error})
+    dstList=readDst(request.user.username)
+    return render_to_response("timeSeries.html",{'dstList':dstList},context_instance=RequestContext(request))
 
 def velocities(request):
-    
-    dstList=readDst()
-    checkUser(request)
+    dstList=readDst(request.user.username)
     print 'cd %s ; cp -f ../result.vel . ; ./draw.sh ;  cp -f  vel.png ../vel.png ; rm vel.png result.vel ; ' % os.path.join(cwd,'exp2nd/vel_result/draw')
     os.popen('cd %s ; cp -f ../result.vel . ; ./draw.sh ;  cp -f  vel.png ../vel.png ; ' % os.path.join(cwd,'exp2nd/vel_result/draw'))      #bxy 2012 1 2 11:08   bxy 2012 1 6 12:41 添加两个 rm
     #os.popen('cd %s ; cp -f ../result.vel . ; ./draw.sh ; rm vel.ps ;  cp -f ./vel.ps* ../vel.ps ;rm ./vel.ps*' % os.path.join(cwd,'exp2nd/vel_result/draw'))
     #os.popen('cd %s ; convert -trim vel.ps vel.png ; rm vel.ps' % os.path.join(cwd,'exp2nd/vel_result'))
     return render_to_response("velocities.html",{'file':'/exp2nd/vel_result/result.vel',
-                               'png':'/exp2nd/vel_result/vel.png','username':username,'error':error})
+                               'png':'/exp2nd/vel_result/vel.png','username':username,'error':error},context_instance=RequestContext(request))
                                
 def baselineCheck(request):
-    dstList=readDst()
-    checkUser(request)
-    return render_to_response("baselineCheck.html",{'dstList':dstList,'username':username,'error':error})
+    dstList=readDst(request.user.username)
+    return render_to_response("baselineCheck.html",{'dstList':dstList,'username':username,'error':error},context_instance=RequestContext(request))
 def atmosphereZenithDelay(request):
-    dstList=readDst()
-    checkUser(request)
-    return render_to_response("atmosphereZenithDelay.html",{'dstList':dstList,'username':username,'error':error})
+    dstList=readDst(request.user.username)
+    return render_to_response("atmosphereZenithDelay.html",{'dstList':dstList,'username':username,'error':error},context_instance=RequestContext(request))
     
 def resultApx(request):
-    checkUser(request)
-    return render_to_response("resultApx.html",{'username':username,'error':error})
+    return render_to_response("resultApx.html",{},context_instance=RequestContext(request))
     
 def Draw_rApx_pictures(request):
     now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -103,12 +85,12 @@ def Draw_rApx_pictures(request):
         print '时间序列'
         initParameter(request)
         showParameter()
-        timeSeriesAccuracy.timeSeriesAccuracy(stn,yr1,mon1,day1,yr2,mon2,day2,now)
-        filepath='/exp2nd/TimeSeries_accuracy/temp/'
+        timeSeriesAccuracy.timeSeriesAccuracy(stn,yr1,mon1,day1,yr2,mon2,day2,now,username)
+        filepath=CONFIG.SOFTWAREPATH+username+'/exp2nd/TimeSeries_accuracy/temp/'
         filename='timeSeriesAccuracy'+now
         tsfiles=[filepath+filename+'.E',filepath+filename+'.N',filepath+filename+'.U']
         pngs=[filepath+filename+'.E.png',filepath+filename+'.N.png',filepath+filename+'.U.png']
-        return render_to_response("png_tsAccuracy.html",{'files':tsfiles,'pngs':pngs})
+        return render_to_response("png_tsAccuracy.html",{'files':tsfiles,'pngs':pngs},context_instance=RequestContext(request))
     if(selectType=='1'):
         print '基线精度'
         initParameter(request)
@@ -121,7 +103,7 @@ def Draw_rApx_pictures(request):
         filename = 'baselineAccuracy'+now
         bsfiles=[filepath+filename+'.E',filepath+filename+'.N',filepath+filename+'.U',filepath+filename+'.L']
         pngs=[filepath+filename+'.E.png',filepath+filename+'.N.png',filepath+filename+'.U.png',filepath+filename+'.L.png']
-        return render_to_response("png_bsAccuracy.html",{'files':bsfiles,'pngs':pngs})
+        return render_to_response("png_bsAccuracy.html",{'files':bsfiles,'pngs':pngs},context_instance=RequestContext(request))
     if(selectType=='2'):
         print '大气延迟'
         initParameter(request)
@@ -132,7 +114,7 @@ def Draw_rApx_pictures(request):
         filepath='/exp2nd/atmosphere_accuracy/temp/'
         atmfile = filepath+now+'atmosphereAccuracy.dat'
         pngpath = filepath+now+'image.png'
-        return render_to_response("png_atmosphereZenithDelay.html",{'file':atmfile,'png':pngpath})
+        return render_to_response("png_atmosphereZenithDelay.html",{'file':atmfile,'png':pngpath},context_instance=RequestContext(request))
                                
 def Draw_azDelay_pictures(request):
     
@@ -140,7 +122,7 @@ def Draw_azDelay_pictures(request):
     showParameter()
     now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     atmosphereView.atmosphereView(stn,yr1,mon1,day1,yr2,mon2,day2,now)
-    return render_to_response("png_atmosphereZenithDelay.html",{'file':'/exp2nd/atmosphere_view/temp/'+now+'atmosphere.dat','png':'/exp2nd/atmosphere_view/temp/image'+now+'.png'})
+    return render_to_response("png_atmosphereZenithDelay.html",{'file':'/exp2nd/atmosphere_view/temp/'+now+'atmosphere.dat','png':'/exp2nd/atmosphere_view/temp/image'+now+'.png'},context_instance=RequestContext(request))
 
 def Draw_bs_pictures(request):
     now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -153,7 +135,7 @@ def Draw_bs_pictures(request):
     filename = 'baseline'+now
     bsfiles=[filepath+filename+'.E',filepath+filename+'.N',filepath+filename+'.U',filepath+filename+'.L']
     pngs=[filepath+filename+'.E.png',filepath+filename+'.N.png',filepath+filename+'.U.png',filepath+filename+'.L.png']
-    return render_to_response("png_baselineCheck.html",{'files':bsfiles,'pngs':pngs})
+    return render_to_response("png_baselineCheck.html",{'files':bsfiles,'pngs':pngs},context_instance=RequestContext(request))
 
 def Draw_ts_pictures(request):
 #   用Gamitdata_analysing()里处理出的数据画时间序列和速度场
@@ -208,7 +190,7 @@ def Draw_ts_pictures(request):
     os.popen('cd %s ; ./mbDataCollect.sh mb_%s.dat' % (os.path.join(cwd,'exp2nd/TimeSeries_result'),stn+now))
     os.popen("cd %s ; convert -trim -crop 595x842+0+50 psbase_ensum.%s* ../../exp2nd/TimeSeries_result/%s.png" % (os.path.join(cwd,'exp2nd/vsoln'),stn,stn+now))
     os.popen('cd %s ; rm -r hfile_in_proc ; rm -r vsoln;' % os.path.join(cwd,'exp2nd'))
-    return render_to_response("png_timeSeries.html",{'png':('/exp2nd/TimeSeries_result/%s.png' % stn+now),'file':('/exp2nd/TimeSeries_result/mb_%s.dat' % (stn+now))})
+    return render_to_response("png_timeSeries.html",{'png':('/exp2nd/TimeSeries_result/%s.png' % stn+now),'file':('/exp2nd/TimeSeries_result/mb_%s.dat' % (stn+now))},context_instance=RequestContext(request))
  
        
 

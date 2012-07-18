@@ -15,3 +15,5 @@ class CONFIG(object):
 	downloadList = 'rcvant.dat%%antmod.dat%%pmu.bull_a%%ut1.usno%%pole.usno%%leap.sec'
 	#需要检查文件的站点，即****2020.11o的前四位，用%%隔开
 	checklist = 'fjfq%%fjct%%fjdt%%fjgs'
+
+	refStation = 'bjfs guam irkt kit3 lhaz pimo pol2 shao twtf tnml tskb urum wuhn'
