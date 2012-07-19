@@ -1,35 +1,14 @@
-{% extends "subnav.html" %}
+{% extends "subnav_base.html" %}
 {% block subnav %}
-<ul class="nav nav-tabs">
-  <li>
-    <a href="#siteInfo" data-toggle="tab">台网信息</a>
+<ul class="nav nav-pills nav-stacked">
+  <li class="{% block map%}{% endblock%}">
+    <a href="/SiteInfo/map" >台站分布</a>
   </li>
-  <li>
-    <a href="#map" data-toggle="tab">台站分布</a>
+  <li class="{% block siteList%}{% endblock%}">
+    <a href="/SiteInfo/siteList">台站列表</a>
   </li>
-  <li>
-    <a href="#siteList" data-toggle="tab">台站列表</a>
-  </li>
-  <li>
-    <a href="#dataManaging" data-toggle="tab">台站质量</a>
-  </li>
-  <li>
-    <a href="#log" data-toggle="tab">台站信息更新</a>
+  <li class="{% block dataManaging%}{% endblock%}">
+    <a href="/SiteInfo/dataManaging">台站质量</a>
   </li>
 </ul>
 {% endblock subnav %}
-
-{% block body %}
-<div class="tab-content">
-	<div class="tab-pane" id="#siteInfo">
-	</div>
-	<div class="tab-pane" id="#map">
-	</div>
-	<div class="tab-pane" id="#siteList">
-	</div>
-	<div class="tab-pane" id="#dataManaging">
-	</div>
-	<div class="tab-pane" id="#log">
-	</div>
-</div>
-{% endblock body %}

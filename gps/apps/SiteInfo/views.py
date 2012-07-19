@@ -10,6 +10,8 @@ import time
 from gps.config import CONFIG
 from models import Site,Img
 from django.template import RequestContext
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 #import getMax_Min
 
 from django.utils.log import logging
@@ -23,12 +25,11 @@ png4=''
 
 def initlog(): 
     logger = logging.getLogger()
-    hdlr = logging.FileHandler('send_statistics.log')
+    hdlr = logging.FileHandler('SiteInfo.log')
     formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
     hdlr.setFormatter(formatter)
     logger.addHandler(hdlr)
     logger.setLevel(logging.DEBUG)
-    logger.info('send_statistics started')
     return logger
 
 log = initlog
@@ -75,18 +76,28 @@ def rw_count(sitecode):     #更新和读取站点对应的count值
 
 def sitesList(request):      #台站列表
     sitelist=Site.objects.all()
-    return render_to_response("siteList.html",{'siteList':sitelist},context_instance=RequestContext(request))
+    sitenameList = [site.Code for site in sitelist]
+    siteList,page_range=my_pagination(request,sitelist)
+    return render_to_response("SiteInfo/siteList.html",{'siteList':siteList,'sitenameList':sitenameList,'page_range':page_range},context_instance=RequestContext(request))
     
 def dataManaging(request):  #台站质量
-    return render_to_response("dataManaging.html",{'siteList':sitelist},context_instance=RequestContext(request))
+    sitelist=Site.objects.all()
+    sitenameList = [site.Code for site in sitelist]
+    siteList,page_range=my_pagination(request,sitelist)
+    return render_to_response("SiteInfo/dataManage.html",{'siteList':siteList,'sitenameList':sitenameList,'page_range':page_range},context_instance=RequestContext(request))
 
 def Map(request):           #台站分布
-    return render_to_response("map.html",{},context_instance=RequestContext(request))
+    return render_to_response("SiteInfo/map.html",{},context_instance=RequestContext(request))
 
-def sitebase(request,sitecode):     #台站列表中的某个台站
+def sitebase(request,sitecode=None):     #台站列表中的某个台站
+    if not sitecode:
+        try:
+            sitecode=request.POST.get('sitecode')
+        except:
+            raise Http404
     siteList = Site.objects.filter(Code=sitecode)
     site = siteList.count() and siteList[0] or False
-    return render_to_response("siteBase.html",{'site':site},context_instance=RequestContext(request))
+    return render_to_response("SiteInfo/siteBase.html",{'site':site},context_instance=RequestContext(request))
     
         
 def update(request,sitecode):
@@ -182,11 +193,36 @@ def updatephoto(png,sitecode,fileName):
     cmd = 'psxy %s  -JX6.5/2.0 -R%s/%s/%s/%s -Ba0.5f0.1:"":/a%0.2ff5:"":WSen:."": -Ey0.02/2/255/0/0 -Sc0.03 -G255/0/0 -K -P -Y7i >%s' % (obfile,minTime,maxTime,minValue,maxValue,dis,os.path.join(cwd,'temp.pdf'))
     outinfo=commands.getstatusoutput(cmd) 
                                           
-    #if outinfo[0]!=0 or outinfo[1]:
-        #log.error('errors pdf \n')
+    if outinfo[0]!=0 or outinfo[1]:
+        log.error('errors pdf \n')
     outinfo=commands.getstatusoutput('convert -trim %s %s' % (os.path.join(cwd,'temp.pdf'),os.path.join(cwd,png[1:])))
-    #if outinfo[0]!=0 or outinfo[1]:
-        #log.error('errors png \n')
-    #else:    
-    commands.getoutput('rm %s' % os.path.join(cwd,'temp.pdf'))
+    if outinfo[0]!=0 or outinfo[1]:
+        log.error('errors png \n')
+    else:    
+        commands.getoutput('rm %s' % os.path.join(cwd,'temp.pdf'))
 # Create your views here.
+def my_pagination(request, queryset):
+    display_amount=15     
+    after_range_num = 5
+    bevor_range_num = 4 
+    paginator = Paginator(queryset, display_amount)
+    try:         
+        page =int(request.GET.get('page'))
+    except:
+        page = 1
+    try:                                         
+        objects = paginator.page(page)
+    except EmptyPage:
+    # If page is out of range (e.g. 9999), deliver last page of results.
+        objects = paginator.page(paginator.num_pages)
+    #except PageNotAnInteger: 
+    # If page is not an integer, deliver first page.
+    #    objects = paginator.page(1)
+    except:
+        objects = paginator.page(1)
+    # 显示范围                           
+    if page >= after_range_num:
+        page_range = paginator.page_range[page-after_range_num:page+bevor_range_num]
+    else:
+        page_range = paginator.page_range[0:page+bevor_range_num]
+    return objects,page_range

@@ -1,0 +1,42 @@
+{% extends "SiteInfo/base.html"%}
+{%block siteList%}active{%endblock%}
+{% block body%}
+<div class="span5">
+    {% if not site %}
+        <h3 align="center">没有您查询的台站</h3>
+    {% else %}
+    <h3 align="center">台站信息</h3>
+    <table class="table table-bordered">
+        <thead>
+                <tr>
+                    <th>
+                        台站代号
+                    </th>
+                    <th>
+                        台站名称
+                    </th>
+                    <th>
+                        台站经度
+                    </th>
+                    <th>
+                        台站纬度
+                    </th>
+                </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <th style="height:30px;" align="center"><a href="SiteInfo/siteBase/{{site.Code}}" name='sitecode'>{{site.Code}}</a></th>
+              <th style="height:30px" align="center">{{site.Name}}</th>
+              <th style="height:30px" align="center">{{site.Longitude}}</th>
+              <th style="height:30px" align="center">{{site.Latitude}}</th>
+            </tr>
+        </tbody>
+    </table>
+    <h3 align="center">台站介绍</h3>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;{{site.Intro}}</p>
+    <h3 align="center">台站图片</h3>
+    {% for img in site.ImgList%}
+        <img src="{{img.img}}" width="350" border="0"/>
+    {% endif %}
+</div>
+{%endblock%}

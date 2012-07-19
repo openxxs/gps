@@ -1,0 +1,70 @@
+{% extends "SiteInfo/base.html"%}
+{%block dataManaging%}active{%endblock%}
+{% block body%}
+    <div class="span5">
+        <form class="well form-search" action="SiteInfo/data" method="POST">
+        <input name="sitecode" class="span3" type="text" data-provide="typeahead" data-resource="{{sitenameList}}">
+        <button type="submit" class="btn btn-primary">查看</button>
+        </form>
+    </div>
+    <div class="span5">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <h3 align="center">福建省台站监测站点列表：点击查看台站质量</h3>   
+                </tr>
+                <tr>
+                    <th>
+                        台站代号
+                    </th>
+                    <th>
+                        台站名称
+                    </th>
+                    <th>
+                        台站经度
+                    </th>
+                    <th>
+                        台站纬度
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            {%for site in siteList.object_list%}
+            <tr>
+              <th style="height:30px;" align="center"><a href="SiteInfo/data/{{site.Code}}" name='sitecode'>{{site.Code}}</a></th>
+              <th style="height:30px" align="center">{{site.Name}}</th>
+              <th style="height:30px" align="center">{{site.Longitude}}</th>
+              <th style="height:30px" align="center">{{site.Latitude}}</th>
+            </tr>
+            {%endfor%}
+            </tbody>
+        </table>
+
+    {% if siteList.object_list %}
+<div class="pagination pagination-centered">                                  
+  <ul>
+    {% if siteList.has_previous %}
+    <li>  <a href="?page={{ siteList.previous_page_number }}">前一页</a></li>   
+    {% else %}
+    <li class="active">  <a>前一页</a></li>                                   
+    {% endif %}
+    {% for p in page_range %}
+    {% ifequal p siteList.number %}
+    <li class="active"><a>{{p}}</a></li>                                          
+    {% else %}
+    <li><a href="?page={{p}}" title="第{{p}}页">{{p}}</a><li>
+    {% endifequal %}
+    {% endfor %}
+       {% if siteList.has_next %}
+          <li> <a href="?page={{ siteList.next_page_number }}">后一页</a></li>
+        {% else %}
+         <li class="active"> <a>后一页</a></li>
+       {% endif %}
+  </ul>
+</div>
+{% endif %}
+       </div>
+    <script type="text/javascript">
+        $('.typeahead').typeahead()
+    </script>
+{%endblock%}

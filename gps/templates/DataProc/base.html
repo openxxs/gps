@@ -1,45 +1,20 @@
 {% extends "subnav.html" %}
 {% block subnav %}
-<ul class="nav nav-tabs">
-<li>
-    <a href="#dataProcessing" data-toggle="tab">数据处理</a>
+<ul class="nav nav-pills nav-stacked">
+  <li class="{% block DataProc%}{% endblock%}">
+    <a href="/DataProc" >批量常规处理</a>
   </li>
-  <li>
-    <a href="#bulkDataProcessing" data-toggle="tab">批量常规处理</a>
+  <li class="{% block baseline%}{% endblock%}">
+    <a href="/DataProc/baseline" >基线处理</a>
   </li>
-  <li>
-    <a href="#baseline" data-toggle="tab">基线处理</a>
+  <li class="{% block datatrack%}{% endblock%}">
+    <a href="/DataProc/datatrack" >事后数据处理</a>
   </li>
-  <li>
-    <a href="#datatrack" data-toggle="tab">事后数据处理</a>
+  <li class="{% block datatrackrt%}{% endblock%}">
+    <a href="/DataProc/datatrackrt" >实时数据处理</a>
   </li>
-  <li>
-    <a href="#datatrackrt" data-toggle="tab">实时数据处理</a>
-  </li>
-  <li>
-    <a href="#atmosphericDelay" data-toggle="tab">大气延迟处理</a>
-  </li>
-  <li>
-    <a href="#ionosphere" data-toggle="tab">电离层处理</a>
+  <li class="{% block atmosphericDelay%}{% endblock%}">
+    <a href="/DataProc/atmosphericDelay" >大气延迟处理</a>
   </li>
 </ul>
 {% endblock subnav %}
-
-{% block body %}
-<div class="tab-content">
-	<div class="tab-pane" id="#dataProcessing">
-	</div>
-	<div class="tab-pane" id="#bulkDataProcessing">
-	</div>
-	<div class="tab-pane" id="#baseline">
-	</div>
-	<div class="tab-pane" id="#datatrack">
-	</div>
-	<div class="tab-pane" id="#datatrackrt">
-	</div>
-	<div class="tab-pane" id="#atmosphericDelay">
-	</div>
-	<div class="tab-pane" id="#ionosphere">
-	</div>
-</div>
-{% endblock body %}
