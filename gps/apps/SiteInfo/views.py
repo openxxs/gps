@@ -5,12 +5,14 @@ from django.shortcuts import render_to_response
 #from trunk.fileshandle import fileshandle
 #from trunk.data_process import readDst
 import commands
-import os,sys,re,shutil,linecache,glob
+import os,sys,re,shutil,linecache,glob,logging
 import time
 from gps.config import CONFIG
 from models import Site,Img
+from django.template import RequestContext
 #import getMax_Min
 
+from django.utils.log import logging
 #cwd=os.path.dirname(__file__)
 cwd=CONFIG.SOFTWAREPATH
 
@@ -18,6 +20,19 @@ png1=''
 png2=''
 png3=''
 png4=''
+
+def initlog(): 
+    logger = logging.getLogger()
+    hdlr = logging.FileHandler('send_statistics.log')
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    hdlr.setFormatter(formatter)
+    logger.addHandler(hdlr)
+    logger.setLevel(logging.DEBUG)
+    logger.info('send_statistics started')
+    return logger
+
+log = initlog
+
 
 def siteSearch(request):
     #sitelist=readDst()
@@ -167,11 +182,11 @@ def updatephoto(png,sitecode,fileName):
     cmd = 'psxy %s  -JX6.5/2.0 -R%s/%s/%s/%s -Ba0.5f0.1:"":/a%0.2ff5:"":WSen:."": -Ey0.02/2/255/0/0 -Sc0.03 -G255/0/0 -K -P -Y7i >%s' % (obfile,minTime,maxTime,minValue,maxValue,dis,os.path.join(cwd,'temp.pdf'))
     outinfo=commands.getstatusoutput(cmd) 
                                           
-    if outinfo[0]!=0 or outinfo[1]:
-        log.error('errors pdf \n')
+    #if outinfo[0]!=0 or outinfo[1]:
+        #log.error('errors pdf \n')
     outinfo=commands.getstatusoutput('convert -trim %s %s' % (os.path.join(cwd,'temp.pdf'),os.path.join(cwd,png[1:])))
-    if outinfo[0]!=0 or outinfo[1]:
-        log.error('errors png \n')
-    else:    
-        commands.getoutput('rm %s' % os.path.join(cwd,'temp.pdf'))
+    #if outinfo[0]!=0 or outinfo[1]:
+        #log.error('errors png \n')
+    #else:    
+    commands.getoutput('rm %s' % os.path.join(cwd,'temp.pdf'))
 # Create your views here.

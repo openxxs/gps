@@ -5,6 +5,7 @@ from django.shortcuts import render_to_response
 import commands
 import os,sys,re,shutil,linecache
 import datetime
+from django.template import RequestContext
 #from trunk.data_process import readDst
 #import atmosphereAccuracy
 #import atmosphereView

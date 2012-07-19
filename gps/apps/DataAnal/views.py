@@ -12,6 +12,7 @@ from django.utils.log import logging
 #import customforms
 from django.contrib.auth.decorators import user_passes_test
 from gps.config import CONFIG
+from django.template import RequestContext
 #cwd=os.getcwd()
 log = logging.getLogger('django')
 

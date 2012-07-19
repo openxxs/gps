@@ -6,6 +6,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.utils.log import logging
+from django.template import RequestContext
 
 import sys, datetime, json, commands, os, re, shutil, linecache, glob, copy, threading, time
 from subprocess import *
@@ -31,7 +32,7 @@ from gps import kmp
 
 #from dataDownload import intervel
 
-log = logging.getLogger('dataprocess')
+log = logging.getLogger('django')
 
 GAMITTABLE = CONFIG.GAMITTABLEPATH
 SOFTWAREPATH = CONFIG.SOFTWAREPATH
@@ -176,8 +177,7 @@ def baselineProcess(request):
         form = ProcessForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            year_1, day_1, year_2, day_2 = int(data['StartYear']), int(data['StartDay']), int(
-                data['EndYear']), int(data['EndDay'])]
+            year_1, day_1, year_2, day_2 = int(data['StartYear']), int(data['StartDay']), int(data['EndYear']), int(data['EndDay'])
             extractOscalaFile.extractTempFile(year_1, day_1, year_2, day_2, 'baseline',username)
             getBaselineData.getData('baseline',username)
     return HttpResponse("successful")
@@ -191,7 +191,7 @@ def atmosphereProcess(request):
         if form.is_valid():
             data = form.cleaned_data
             year_1, day_1, year_2, day_2 = int(data['StartYear']), int(data['StartDay']), int(
-                data['EndYear']), int(data['EndDay'])]
+                data['EndYear']), int(data['EndDay'])
             extractOscalaFile.extractTempFile(year_1, day_1, year_2, day_2, 'atmosphere')
             getAtmosphereData.getData('atmosphere',username)
     return HttpResponse("successful")

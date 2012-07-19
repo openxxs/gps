@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login,logout
 #import  dataDownload 
 import os
 from gps.config import CONFIG
+from django.template import RequestContext
 
 #cwd=os.path.dirname(__file__) 
 SOFTWAREPATH = CONFIG.SOFTWAREPATH
@@ -25,9 +26,6 @@ def transformDoy(request):
     doyResult=[]
     gpsWeek=''
     decimalYear=''
-
-    if request.method=="POST":
-        
     if(isDigit(dateYear) and isDigit(dateMonth) and isDigit(dateDay)):      
         doyResult =myDoy.doy([dateYear,dateMonth,dateDay])
         doyYear = dateYear
