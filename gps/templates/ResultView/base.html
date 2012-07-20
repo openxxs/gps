@@ -1,35 +1,20 @@
-{% extends "subnav.html" %}
+{% extends "subnav_base.html" %}
 {% block subnav %}
-<ul class="nav nav-tabs">
-<li>
-    <a href="#resultView" data-toggle="tab">结果查看</a>
-  </li>
-  <li>
-    <a href="#timeSeries" data-toggle="tab">时间序列</a>
-  </li>
-  <li>
-    <a href="#velocities" data-toggle="tab">速度场</a>
-  </li>
-  <li>
-    <a href="#atmosphereZenithDelay" data-toggle="tab">大气天顶延迟</a>
-  </li>
-  <li>
-    <a href="#resultApx" data-toggle="tab">结果精度</a>
-  </li>
+<ul class="nav nav-pills nav-stacked">
+<li class="{% block timeSeries %}{% endblock %}">
+ <a href="/ResultView/timeSeries">时间序列</a>
+</li>
+<li class="{% block baselineCheck %}{% endblock %}">
+ <a href="/ResultView/baselineCheck">基线查看</a>
+</li>
+<li class="{% block velocities %}{% endblock  %}">
+ <a href="/ResultView/velocities">速度场</a>
+</li>
+<li class="{% block atmosphereZenithDelay %}{% endblock %}">
+ <a href="/ResultView/atmosphereZenithDelay">大气天顶延迟</a>
+</li>
+<li class="{% block resultApx %}{% endblock %}">
+ <a href="/ResultView/resultApx">结果精度</a>
+</li>
 </ul>
 {% endblock subnav %}
-
-{% block body %}
-<div class="tab-content">
-	<div class="tab-pane" id="#resultView">
-	</div>
-	<div class="tab-pane" id="#timeSeries">
-	</div>
-	<div class="tab-pane" id="#velocities">
-	</div>
-	<div class="tab-pane" id="#atmosphereZenithDelay">
-	</div>
-	<div class="tab-pane" id="#resultApx">
-	</div>
-</div>
-{% endblock body %}

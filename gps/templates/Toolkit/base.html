@@ -1,25 +1,14 @@
-{% extends "subnav.html" %}
+{% extends "subnav_base.html" %}
 {% block subnav %}
-<ul class="nav nav-tabs">
-  <li>
-    <a href="#doy" data-toggle="tab">时间转换</a>
+<ul class="nav nav-pills nav-stacked">
+  <li class="{% block doy%}{% endblock%}">
+    <a href="/Toolkit/doy" >时间转换</a>
   </li>
-  <li>
-    <a href="#framework" data-toggle="tab">参考架转换</a>
+  <li class="{% block framework%}{% endblock%}">
+    <a href="/Toolkit/framework">参考架转换</a>
   </li>
-  <li>
-    <a href="#dataDownload" data-toggle="tab">数据下载</a>
+  <li class="{% block dataDownload%}{% endblock%}">
+    <a href="/Toolkit/dataDownload">数据下载</a>
   </li>
 </ul>
 {% endblock subnav %}
-
-{% block body %}
-<div class="tab-content">
-	<div class="tab-pane" id="#doy">
-	</div>
-	<div class="tab-pane" id="#framework">
-	</div>
-	<div class="tab-pane" id="#dataDownload">
-	</div>
-</div>
-{% endblock body %}

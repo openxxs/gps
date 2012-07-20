@@ -1,40 +1,20 @@
-{% extends "subnav.html" %}
+{% extends "subnav_base.html" %}
 {% block subnav %}
-<ul class="nav nav-tabs">
-  <li>
-    <a href="#analysing" data-toggle="tab">数据分析</a>
+<ul class="nav nav-pills nav-stacked">
+  <li class="{% block strain %} {% endblock%}">
+    <a href="/DataAnal/strain">地壳应变状态</a>
   </li>
-  <li>
-    <a href="#crustalStrain" data-toggle="tab">地壳应变状态</a>
+  <li class="{% block crosssection %} {% endblock%}">
+    <a href="/DataAnal/crosssection">速度剖面</a>
   </li>
-  <li>
-    <a href="#faultActivity" data-toggle="tab">断层活动性</a>
+  <li class="{% block expandrate %} {% endblock%}">
+    <a href="/DataAnal/expandrate">区域面膨胀率</a>
   </li>
-  <li>
-    <a href="#smallscalePlateMotion" data-toggle="tab">小尺度板块运动</a>
+  <li class="{% block deltaS %} {% endblock%}">
+    <a href="/DataAnal/deltaS">应变状态变化</a>
   </li>
-  <li>
-    <a href="#deltaV" data-toggle="tab">速度场变化分析</a>
-  </li>
-  <li>
-    <a href="#deltaS" data-toggle="tab">应变率变化分析</a>
+  <li class="{% block deltaV %} {% endblock%}">
+    <a href="/DataAnal/deltaV">速度场变化</a>
   </li>
 </ul>
 {% endblock subnav %}
-
-{% block body %}
-<div class="tab-content">
-	<div class="tab-pane" id="#analysing">
-	</div>
-	<div class="tab-pane" id="#crustalStrain">
-	</div>
-	<div class="tab-pane" id="#faultActivity">
-	</div>
-	<div class="tab-pane" id="#smallscalePlateMotion">
-	</div>
-	<div class="tab-pane" id="#deltaV">
-	</div>
-	<div class="tab-pane" id="#deltaS">
-	</div>
-</div>
-{% endblock body %}

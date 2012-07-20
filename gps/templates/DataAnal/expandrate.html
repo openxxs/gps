@@ -1,0 +1,126 @@
+{% extends "DataAnal/base,html" %}
+{%block expandrate%}active{%endblock%}
+{% block body %}
+<style type="text/css">
+.block
+{
+	position:absolute;
+	top:19px;
+	left:59px;
+	z-index:1;
+	width:532px;
+	display:none;
+	}
+.click_block:hover
+{
+	cursor:pointer;
+	}
+.click_block
+{
+	z-index:9;
+	position:absolute;
+	}
+</style>
+<script type="text/javascript">
+function shows(tt)
+{
+	document.getElementById(tt).style.display="block";
+	
+	};
+function gos(tt)
+{
+	document.getElementById(tt).style.display="none";
+	};
+function expandrate(site1 , site2 , site3)
+	{
+	    alert(site1+' '+site2+' '+site3);
+	    str = 'site1='+'JPLM'+'&site2='+'MIZU'+'&site3=' + 'USUD'
+	    new Ajax.Updater('expandRateResult','/DataAnal/expandrateAnalyse',{method:'GET',asynchronous:true,parameters:str});	   
+		}
+</script>
+
+<div style="z-index:-1;">
+<img src="/site_media/static/img/expandrateBase.jpg" width="600" name="main" Id="main"> </div>
+
+<div style="">
+<img Id="pic1" class="block" src="/site_media/static/img/block/1.png" style="display:none;" />
+</div>
+<div class="click_block" style="height:113px; width:178px; left: 412px; top: 64px;" onmousemove="shows('pic1')" onmouseout="gos('pic1')" onclick="expandrate()">
+</div>
+
+<div style="">
+<img Id="pic2" class="block" src="/site_media/static/img/block/2.png" style="display:none;"/>
+</div>
+<div class="click_block" style="height:80px; width:192px; left: 254px; top:35px;" onmousemove="shows('pic2')" onmouseout="gos('pic2')" onclick="expandrate('JPLM','MIZU','USUD')">
+<!--onclick="expandrate('FJWY','FJSW','FJZH')"-->
+</div>
+
+<div style="">
+<img Id="pic3" class="block" src="/site_media/static/img/block/3.png" style="display:none;"/>
+</div>
+<div class="click_block" style="height:106px; width:123px; left: 217px; top: 110px;" onmousemove="shows('pic3')" onmouseout="gos('pic3')" onclick="expandrate('FJTN' ,'FJSX','FJYA')">
+</div>
+
+<div style="">
+<img Id="pic4" class="block" src="/site_media/static/img/block/4.png" style="display:none"/>
+</div>
+<div class="click_block" style="height:120px; width:110px; position:absolute; left: 309px; top: 153px;" onmousemove="shows('pic4')" onmouseout="gos('pic4')" onclick="expandrate('FJDT',   'NANP',   'FJYT')">
+</div>
+
+<div style="">
+<img Id="pic5" class="block" src="/site_media/static/img/block/5.png" style="display:none"/>
+</div>
+<div class="click_block" style="height:82px; width:82px; position:absolute; left: 304px; top: 245px;" onmousemove="shows('pic5')" onmouseout="gos('pic5')" onclick="expandrate('FJDT',   'YONC',   'FJAX')">
+</div>
+
+<div style="">
+<img Id="pic6" class="block" src="/site_media/static/img/block/6.png" style="display:none" />
+</div>
+<div  class="click_block"  style="height:63px; width:90px; position:absolute; left: 381px; top: 152px;" onmousemove="shows('pic6')" onmouseout="gos('pic6')" onclick="expandrate('FJGT'   'FJMQ'   'FJBF')">
+</div>
+
+
+<div style="">
+<img Id="pic7" class="block" src="/site_media/static/img/block/7.png" style="display:none" />
+</div>
+<div  class="click_block"  style="height:103px; width:143px; position:absolute; left: 132px; top: 278px;" onmousemove="shows('pic7')" onmouseout="gos('pic7')" onclick="expandrate('FJWP',   'LYAN',   'FJYD')">
+</div>
+
+<div style="" >
+<img Id="pic8" class="block" src="/site_media/static/img/block/8.png" style="display:none"/>
+</div>
+<div class="click_block" style="height:75px; width:97px; position:absolute; left: 274px; top: 320px;" onmousemove="show('pic8')" onmouseout="gos('pic8')" onclick="expandrate('FJHU',   'FJZZ',   'FJTA')">
+</div>
+
+<div style="">
+<img Id="pic9" class="block" src="/site_media/static/img/block/9.png" style="display:none"/>
+</div>
+<div class="click_block" style="height:73px; width:76px; position:absolute; left: 346px; top: 280px;" onmousemove="shows('pic9')" onmouseout="gos('pic9')" onclick="expandrate('QUZH',   'YONC',   'FJHA')">
+</div>
+
+<div style="">
+<img Id="pic10" class="block" src="/site_media/static/img/block/10.png" style="display:none"/>
+</div>
+<div class="click_block" style="height:53px; width:71px; position:absolute; left: 438px; top: 212px;" onmousemove="shows('pic10')" onmouseout="gos('pic10')" onclick="expandrate('FUZH',   'FJCL',   'FJFQ')">
+</div>
+
+<div style="">
+<img Id="pic11" class="block" src="/site_media/static/img/block/11.png" style="display:none"/>
+</div>
+<div class="click_block" style="height:77px; width:78px; position:absolute; left: 383px; top: 235px;" onmousemove="shows('pic11')" onmouseout="gos('pic11')" onclick="expandrate('FJXP',   'YUTI',   'FJYT')">
+</div>
+
+<div style="">
+<img Id="pic12" class="block" src="/site_media/static/img/block/12.png" style="display:none"/>
+</div>
+<div class="click_block" style="height:137px; width:171px; position:absolute; left: 148px; top: 194px;" onmousemove="shows('pic12')" onmouseout="gos('pic12')" onclick="expandrate('FJCT',   'FJYA',   'LYAN')">
+</div>
+
+<div style="">
+<img Id="pic13" class="block" src="/site_media/static/img/block/13.png"  style="display:none"/>
+</div>
+<div class="click_block" style="height:79px; width:116px; position:absolute; left: 230px; top: 381px;" onmousemove="shows('pic13')" onmouseout="gos('pic13')" onclick="expandrate('FJPH',   'FJZP',   'FJZZ')">
+</div>
+<div id="expandRateResult">
+</div>
+{% endblock body %}

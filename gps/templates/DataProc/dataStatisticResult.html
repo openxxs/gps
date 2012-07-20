@@ -1,0 +1,120 @@
+{% extends "DataProc/base.html"%}
+{%block DataProc%}active{%endblock%}
+{% block body%}
+<div class="span8">
+	<table align="center" class="table table-bordered">
+	<tbody>
+	    <tr >
+	        <h3 align="center">原始数据统计</h3>
+	    </tr>
+	    <tr>
+	        <td colspan="4">包含站点：</td>
+	    </tr>
+	    <tr>
+	        <td colspan="4">{{sitelist}}</td>
+	    </tr>
+	    <tr>
+	        <td colspan="4">缺少文件：</td>
+	    </tr>
+	    {% for info in infoList %}
+	    <tr>
+	        <td>{{info.site}}</td>
+	        <td>{{info.info}}</td>
+	    </tr>
+	    {% endfor %}
+	 <tr>
+	   <td align="center">
+	   	<button class="btn btn-primary" type="submit" onclick="bulkProcess();">开始GAMIT，GLRED解算</button>
+		</td>
+	 </tr>
+	 <tr>
+	  <td align="center" colspan="4"><h3 align="center">sh_gamit.log查看</h3></td>
+	 </tr>
+	 {% for year in years %}
+	 <tr>
+	  <td align="center">{{year}}</td>
+	  <td align="center">
+		<button class="btn btn-primary" type="submit" nclick="readGamitLog('{{year}}')">查看</button>
+	</td>
+	 </tr>
+	{% endfor %}
+	</tbody>  
+	</table>
+	<textarea id="editConfig" name="editConfig" class="edit_overlay" rows="20" cols="110" style="display:none;">		
+	</textarea>
+	<div id="operatorDiv" class="div_overlay" style="display:none;" >
+	<input type="button" name="shutdown" value="关闭" onclick="hideGedit()"/>
+	</div>
+	<div id="configDiv" style="display:none;" >
+</div>
+<script language="javascript" type="text/javascript">
+        var dvMsg = document.createElement("div");
+        var dv = document.createElement("div");
+        function selfAlert(strHtml){  
+            //该值可以作为返回值，初始化时为 0 ，点击确定后变为 1 ，点击关闭后变为 2 ，自动关闭 3   
+            var alertValue = 0;     
+            //创建提示对话框面板  
+            
+            dvMsg.style.position = "absolute";  
+            dvMsg.setAttribute('id','msg');  
+            dvMsg.style.width = "300px";  
+            dvMsg.style.height = "200px";  
+            dvMsg.style.top="40%";  
+            dvMsg.style.left="40%";  
+            dvMsg.style.background = "white";  
+            dvMsg.style.zIndex = "1112";  
+              
+            
+            dvMsg.innerHTML = strHtml;  
+            document.body.appendChild(dvMsg);  
+               
+            //timer秒后自动关闭selfAlert(提示框)         
+        }
+        function overlay(){
+            var h = screen.availHeight;  
+            var w = screen.availWidth;
+            dv.setAttribute('id','bg');
+            dv.setAttribute('class','black_overlay');
+            //将该元素添加至body中  
+            document.body.appendChild(dv);          
+        }
+        function remove(){                      
+            document.body.removeChild(dvMsg);  
+        }  
+        function bulkProcess(){
+        //var str='startYear='+{{year_1}}+'&startDay='+{{day_1}}+'&endYear='+{{year_2}}+'&endDay='+{{day_2}}+'&IGSparamater='+{{IGS}}
+        //alert(str);
+        new Ajax.Request('/dataProcessing/bulkProcess/{{year_1}}/{{day_1}}/{{year_2}}/{{day_2}}/{{IGS}}',{method:'GET',asynchronous:true,parameters:'',onComplete:show_timeSeries});
+        overlay();
+        selfAlert("<h3 align='center'>后台正在处理数据...</h3>");
+      }
+      function show_timeSeries(){
+            remove();
+            document.body.removeChild(dv);
+      }
+ </script>
+ <script type="text/javascript">
+    function readGamitLog(filename){
+        new Ajax.Updater('configDiv','/dataProcessing/readGamitLog/'+filename+'/',{method:'GET',asynchronous:true,onComplete:showGedit(filename)});
+    }
+    function showGedit(filename){
+        var editConfig = document.getElementById('editConfig');
+        var configDiv = document.getElementById('configDiv');      
+        editConfig.value = configDiv.innerHTML ;
+        
+        //alert(editConfig.value);
+        editConfig.style.display="block";
+        show_link(filename);
+    }
+    function show_link(filename){
+        var operatorDiv = document.getElementById('operatorDiv');
+        operatorDiv.style.display="block";
+    }
+    function hideGedit(){
+        var editConfig = document.getElementById('editConfig');
+        editConfig.style.display="none";
+        var operatorDiv = document.getElementById('operatorDiv');
+        operatorDiv.style.display="none";
+    }
+    </script>
+{%endblock%}

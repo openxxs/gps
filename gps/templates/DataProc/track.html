@@ -1,0 +1,15 @@
+{% extends "DataProc/base.html"%}
+{%block datatrack%}active{%endblock%}
+{% block body%}
+<div class="span8">
+	<form action="/DataProc/datatrack" method="POST">
+			    <legend>事后数据处理</legend>
+			    {% load bootstrap_tags %}
+			    {% csrf_token %}
+			    {{ form|as_bootstrap }}
+			    <div class="form-actions">
+			      <button type="submit" class="btn btn-primary">开始计算</button>
+			    </div>
+			</form>
+</div>
+{% endblock %}

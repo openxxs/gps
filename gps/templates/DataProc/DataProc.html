@@ -1,0 +1,107 @@
+{% extends "DataProc/base.html"%}
+{%block DataProc%}active{%endblock%}
+{% block body%}
+<div class="span8">
+<div class="tabbable">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#1" data-toggle="tab">参数编辑</a></li>
+		<li><a href="#2" data-toggle="tab">文件更新</a></li>
+		<li><a href="#3" data-toggle="tab">数据准备</a></li>
+	</ul>
+	<div class="tab-content">
+		<div class="tab-pane active" id="1">
+			<script type="text/javascript">
+			    function readConfigFile(filename){
+			        new Ajax.Updater('configDiv','/DataProc/configEditDetail/'+filename+'/',{method:'get',asynchronous:true,onComplete:showGedit(filename)});
+			    }
+			    function showGedit(filename){
+			        var editConfig = document.getElementById('editConfig');
+			        var configDiv = document.getElementById('configDiv');      
+			        editConfig.value = configDiv.innerHTML ;
+			        
+			        //alert(editConfig.value);
+			        editConfig.style.display="block";
+			        show_link(filename);
+			    }
+			    function show_link(filename){
+			        var operatorDiv = document.getElementById('operatorDiv');
+			        document.writeform.action ='/DataProc/saveConfigFile/'+filename+'/';
+			        operatorDiv.style.display="block";
+			    }
+			    function hideGedit(){
+			        var editConfig = document.getElementById('editConfig');
+			        editConfig.style.display="none";
+			        var operatorDiv = document.getElementById('operatorDiv');
+			        operatorDiv.style.display="none";
+			    }
+			    function resetConfigFile(){
+			        new Ajax.Request('/DataProc/resetConfigFile/',{method:'POST',asynchronous:true,onComplete:writeResult});
+			    }
+			    function writeResult(){
+			        alert('保存完成');
+			    }
+			    </script>
+		<div><table align="center" class="table table-bordered">
+				  <tbody>
+				   <tr>
+				    <td align="center"><h2 align="center">计算参数编辑</h2></td>
+				   </tr>
+				   {% for file in fileList %}
+				  <tr>
+				    <td align="center">{{file}}</td>
+				    <td align="center"><input type="button" value="编辑" onclick="readConfigFile('{{file}}')"/></td>
+				  </tr>
+				{% endfor %}
+				<tr>
+				    <td align="center"><a onclick="resetConfigFile()">重置</a></td>
+				</tr>
+				</tbody>  
+				</table>
+				<form action='/DataProc/saveConfigFile/' method='POST' name="writeform">
+				<textarea id="editConfig" name="editConfig" class="edit_overlay" rows="20" cols="110" style="display:none;">		
+				</textarea>
+				<div id="operatorDiv" class="div_overlay" style="display:none;" >
+				<input type="submit" name="write" value="保存" />
+				<input type="button" name="shutdown" value="关闭" onclick="hideGedit()"/>
+				</div>
+				</form>
+				<div id="configDiv" style="display:none;" >
+				</div></div>
+			
+		</div>
+		<div class="tab-pane" id="2">
+			<table align="center" class="table table-bordered">
+			  <tbody>
+			   <tr>
+			    <td align="center" ><h3 align="center">表格统计更新</h3></td>
+			   </tr>
+			  <tr>
+			    <td align="center">文件名</td>
+			    <td align="center">最后更新时间</td>
+			    <td align="center"><a href="/DataProc/tableStatisticDetail/bulk">全部更新</a></td>
+			  </tr>
+			   {% for file in fileStatus %}
+			  <tr>
+			    <td align="center">{{file.name}}</td>
+			    <td align="center">{{file.time}}</td>
+			    <td align="center"><a href="/DataProc/tableStatisticDetail/{{file.name}}">更新</a></td>
+			  </tr>
+			  {% endfor %}
+			</tbody>  
+			</table>
+		</div>
+		<div class="tab-pane" id="3">
+			<form action="/DataProc/dataStatisticDetail" method="POST">
+			    <legend>原始数据统计</legend>
+			    {% load bootstrap_tags %}
+			    {% csrf_token %}
+			    {{ form|as_bootstrap }}
+			    <div class="form-actions">
+			      <button type="submit" class="btn btn-primary">开始计算</button>
+			    </div>
+			</form>
+		</div>
+	</div>
+</div>
+</div>
+{% endblock %}

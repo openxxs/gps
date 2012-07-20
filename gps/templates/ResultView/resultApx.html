@@ -1,0 +1,364 @@
+{% extends "ResultView/base.html" %}
+{%block resultApx%}active{%endblock%}
+{% block body %}
+<div class="span8">
+<script type="text/javascript" >
+var regular=/^[0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z]\s*$/;  
+function select()
+{
+var sel=document.all.selectType.selectedIndex;
+ switch(sel)
+ {
+  case 0:
+  document.getElementById("notify").innerHTML="您可以输入一个台站名称文件";
+   document.getElementById("tt").innerHTML="输入错误，仅可输入一个台站";
+  regular=/^[0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z]\s*$/;
+  break;
+  case 1:
+ 
+  document.getElementById('tt').innerHTML="输入错误，仅可以输入两个以空格隔开台站";
+  document.getElementById("notify").innerHTML='您可以输入两个以空格隔开的台站';
+  regular=/^[0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z]\s[0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z]\s*$/;
+  break;
+  case 2:
+  document.getElementById("notify").innerHTML="您可以输入一个台站名称文件";
+  document.getElementById("tt").innerHTML="输入错误，仅可输入一个台站";
+  regular=/^[0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z]\s*$/;
+  break;
+  }
+ 
+}
+//正则表达匹配 （四个字符 ）*四个字符
+function zhengze(str){ 
+if ( str == "" ) return true; 
+//正则
+if(regular=="")
+{var re=/[0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z]\s*$/;}
+else{
+var re =regular;}
+return re.test(str); 
+} 
+
+//一旦text框没有focus,就不会进行输入类型的提示,同时判断你写上去的东西有没有写对
+function oblur()
+{
+	 document.getElementById('notify').style.visibility="hidden";
+	 var ss=document.getElementById('sta').value;
+	    if(zhengze(ss))
+		{document.getElementById('tt').style.visibility="hidden";}
+		else
+		{document.getElementById('tt').style.visibility="visible";}
+	}
+//一旦开始输入则会撤销输入类型的提醒
+function judge()
+{
+	var ss=document.getElementById('sta').value;
+	if(ss=='')
+	{
+	  document.getElementById('notify').style.visibility="visible";
+
+		}
+	else
+	{
+		document.getElementById('notify').style.visibility="hidden";
+		
+	}
+	
+	}
+//初次点击时会提供提示，告知需要输入的数据类型
+function notify()
+{
+	var ss=document.getElementById('sta').value;
+	//如果没有填东西
+	if(ss=='')
+	{
+		document.getElementById('notify').style.visibility="visible";
+		}
+	else
+	{
+		document.getElementById('notify').style.visibility="hidden";
+		}
+	}
+
+</script>
+
+
+
+<table align="center" class="table table-bordered" name="resultTable">
+  <tr style="position:relative;">
+    <td align="center" colspan="4"><h2 align="center">结果精度</h2></td>
+  </tr>
+  <tr height="40px;">
+    <td colspan="1">参数选择：</td>
+    <td colspan="2">
+    <select name="selectType" onchange="select()">
+            <script language="javascript" type="text/javascript">  
+        		var element=new Array("时间序列","基线","大气延迟")	
+        		for(var i=0;i<element.length;i++){	 
+            	    document.write("<option  value="+i+">"+element[i]+"</option>"); 
+            	}
+            </script>
+    </select>
+    </td>
+  </tr>
+  <tr>
+    <td nowrap> 开始时间：</td>
+      <td><select name="startYear" onChange="getStartDates();getEndYear();getEndMonth();">
+        <script language="javascript" type="text/javascript">  
+            var date=new Date();  
+            var year=date.getFullYear();            
+            for(var i=2000;i<=year;i++){                            
+                document.write("<option value="+i+">"+i+"</option>");  
+            }
+            function  append(o,v){                    		
+                var option=new Option(v,v);   
+                o.options.add(option);  
+            }
+            function getEndYear(){
+                var eYear=document.getElementsByName("endYear")[0];
+                var y=document.getElementsByName("startYear")[0].value;
+                eYear.innerHTML="";
+                for(j=y;j<=year;j++){
+                    append(eYear,j);    
+                }
+                getEndDates();
+            }
+    	</script>
+      </select>
+      年&nbsp;&nbsp</td>
+      <td>
+      <select name="startMonth"  onChange="getStartDates();getEndMonth();">
+        <script language="javascript" type="text/javascript">
+            document.write("<option value="+1+" selected>"+1+"</option>");
+            for(var i=2;i<=12;i++){  
+                    document.write("<option value="+i+">"+i+"</option>");  
+            }
+            function  is_leapYear(){
+            var y=document.getElementsByName("startYear")[0].value;  
+
+            var flag=true;  
+            flag=(y%4==0&&y%100!=0||y%400==0);  
+            return flag; 
+            }
+            function  getEndMonth(){
+                var e_yValue=document.getElementsByName("endYear")[0].value;
+                var s_yValue=document.getElementsByName("startYear")[0].value;
+                var s_mValue=document.getElementsByName("startMonth")[0].value;
+                var e_Month=document.getElementsByName("endMonth")[0];
+                e_Month.innerHTML="";
+                if(e_yValue==s_yValue){
+                    
+                    for(j=s_mValue;j<=12;j++)
+                        append(e_Month,j);
+                }
+                else{                
+                    for(j=1;j<=12;j++)
+                        append(e_Month,j);
+                }
+                
+            }
+            function  getStartDates(){
+                var day=document.getElementsByName("startDay")[0];
+                day.innerHTML="";  
+                var month=document.getElementsByName("startMonth")[0].value;
+                var flag=is_leapYear();
+                if(flag && month==2){
+                for(i=1;i<30;i++){
+                    append(day,i);
+                }
+                }
+                else if(!flag && month==2)
+                    for(i=1;i<29;i++){
+                    append(day,i);
+                    }
+                else if(month==4 || month==6 || month==9 || month==11){
+                    for(i=1;i<31;i++){
+                    append(day,i);
+                    }
+                }
+                else{
+                    for(i=1;i<32;i++){
+                    append(day,i);
+                    }
+                }
+            }
+            
+    	</script>
+      </select>  
+      月&nbsp;&nbsp</td>
+      <td>
+      <select name="startDay" onChange="getEndDates()">
+        <script language="javascript" type="text/javascript">
+            document.write("<option value="+1+" selected>"+1+"</option>");
+            for(var i=2;i<=31;i++){  
+                document.write("<option value="+i+">"+i+"</option>");
+            }
+            function getEndDay(){
+                var e_yValue=document.getElementsByName("endYear")[0].value;
+                var s_yValue=document.getElementsByName("startYear")[0].value;
+                var s_mValue=document.getElementsByName("startMonth")[0].value;
+                var e_mValue=document.getElementsByName("endMonth")[0].value;
+                var s_dValue=document.getElementsByName("startDay")[0].value;
+                var e_Day=document.getElementsByName("endDay")[0];
+
+                if(e_yValue==s_yValue && e_mValue==s_mValue){
+                    return s_dValue;
+                }
+                else
+                    return 1;
+            }
+        
+        </script>
+      </select>
+      日&nbsp;&nbsp</td>
+    </tr><tr>
+    <td align="left">截止时间：   </td>
+        <td><select name="endYear" onChange="getEndMonth();getEndDates();">
+        <script language="javascript" type="text/javascript">  
+            var date=new Date();  
+            var year=date.getFullYear();
+            document.write("<option value="+year+" selected>"+year+"</option>");
+            for(var i=year-1;i>=year-11;i--){                            
+            document.write("<option value="+i+">"+i+"</option>");  
+            }								                 		                                  	    
+    	</script>
+      </select>
+      年&nbsp;&nbsp</td>
+      <td>
+      <select name="endMonth"  onChange="getEndDates()">
+        <script language="javascript" type="text/javascript">
+            document.write("<option value="+1+" selected>"+1+"</option>");
+            for(var i=2;i<=12;i++){  
+                    document.write("<option value="+i+">"+i+"</option>");  
+            }
+            function  endis_leapYear(){
+            var y=document.getElementsByName("endYear")[0].value;  
+
+            var flag=true;  
+            flag=(y%4==0&&y%100!=0||y%400==0);  
+            return flag; 
+            }    
+            function  getEndDates(){
+                s_day=getEndDay()
+                var e_day=document.getElementsByName("endDay")[0];
+                e_day.innerHTML="";  
+                var month=document.getElementsByName("endMonth")[0].value;
+                var flag=endis_leapYear();
+                if(flag && month==2){
+                for(i=s_day;i<30;i++){
+                    append(e_day,i);
+                }
+                }
+                else if(!flag && month==2)
+                    for(i=s_day;i<29;i++){
+                    append(e_day,i);
+                    }
+                else if(month==4 || month==6 || month==9 || month==11){
+                    for(i=s_day;i<31;i++){
+                    append(e_day,i);
+                    }
+                }
+                else{
+                    for(i=s_day;i<32;i++){
+                    append(e_day,i);
+                    }
+                }
+            }                        
+    	</script>
+      </select>  
+      月&nbsp;&nbsp;</td>
+      <td>
+      <select name="endDay">
+        <script language="javascript" type="text/javascript">
+            document.write("<option value="+1+" selected>"+1+"</option>");
+            for(var i=2;i<=31;i++){  
+                    document.write("<option value="+i+">"+i+"</option>");  
+            }
+                                
+    	</script>
+      </select>
+      日&nbsp;&nbsp</td>
+  </tr>
+   <tr style="position:relative;">
+    <td colspan="1"> 台站： </td>
+    <td  colspan="3">
+      <input type="text" style="width: 350px;" class="input" Id="sta" name="dst_station" onkeyup="judge()" onblur="oblur()" onclick="notify()">
+    </td>
+
+  </tr>
+  <tr>
+<td colspan="4">
+<div Id="notify" style="color:red;visibility:hidden;">您可以输入一个台站名称文件</div> 
+</td>
+</tr>
+<tr>
+<td colspan="4">
+ <div Id="tt" style="color:red;visibility:hidden;">输入错误，仅可输入一个台站</div>    
+</td>
+</tr>
+  <tr>
+        <script language="javascript" type="text/javascript">
+        var dvMsg = document.createElement("div");
+        var dv = document.createElement("div");
+        function selfAlert(strHtml){  
+            //该值可以作为返回值，初始化时为 0 ，点击确定后变为 1 ，点击关闭后变为 2 ，自动关闭 3   
+            var alertValue = 0;     
+            //创建提示对话框面板  
+            
+            dvMsg.style.position = "absolute";  
+            dvMsg.setAttribute('id','msg');  
+            dvMsg.style.width = "300px";  
+            dvMsg.style.height = "200px";  
+            dvMsg.style.top="40%";  
+            dvMsg.style.left="40%";  
+            dvMsg.style.background = "white";  
+            dvMsg.style.zIndex = "1112";  
+              
+            
+            dvMsg.innerHTML = strHtml;  
+            document.body.appendChild(dvMsg);  
+               
+            //timer秒后自动关闭selfAlert(提示框)  		
+        }
+        function overlay(){
+            var h = screen.availHeight;  
+            var w = screen.availWidth;
+            dv.setAttribute('id','bg');
+            dv.setAttribute('class','black_overlay');
+            //将该元素添加至body中  
+            document.body.appendChild(dv);   		
+        }
+        function remove(){   		    	    
+            document.body.removeChild(dvMsg);  
+        }  
+        function Draw_rApx_pictures(){
+	    var startY=document.getElementsByName("startYear")[0].value;            
+        var startM=document.getElementsByName("startMonth")[0].value;
+        var startD=document.getElementsByName("startDay")[0].value;
+        var endY=document.getElementsByName("endYear")[0].value;
+        var endM=document.getElementsByName("endMonth")[0].value;
+        var endD=document.getElementsByName("endDay")[0].value;
+        var dst_station=document.getElementsByName("dst_station")[0].value;
+
+	    var selectType=document.getElementsByName("selectType")[0].value;
+	    var trend='0'
+	    var str='selectType='+selectType+'&startYear='+startY+'&startMonth='+startM+'&startDay='+startD+'&endYear='+endY+'&endMonth='+endM+'&endDay='+endD+'&dst_station='+dst_station+'&trend='+trend
+	    
+	    alert(str);	
+	    new Ajax.Updater('accuracy','/ResultView/Draw_rApx_pictures/',{method:'GET',asynchronous:true,parameters:str,onComplete:show_timeSeries});    
+	    overlay();
+	    selfAlert("<h3 align='center'>后台正在处理数据...</h3>");
+      }
+      function show_timeSeries(){
+            remove();
+            document.body.removeChild(dv);
+      }
+    </script>
+    <td colspan="4"><input name="submit" type="submit" value="确定" class="submit_btn" onclick="Draw_rApx_pictures()"></td>
+    <td  style="position:absolute;right:80px;" colspan="4"><input name="cancel" type="reset" value="取消" class="submit_btn"></td>
+  </tr>
+</table>
+&nbsp;&nbsp;&nbsp;&nbsp<div id="accuracy" align="center">
+</div>
+</div>
+{% endblock %} 

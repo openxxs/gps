@@ -1,0 +1,47 @@
+{% extends "Toolkit/base.html" %}
+{%block doy%}active{%endblock%}
+{% block body %}
+<form method="GET" action="/Toolkit/transformDoy/">
+<table align="center" class="table table-bordered">
+ <h2 align="center" style="width:496px;margin-left:65px;">时间转换</h2>
+  <tr style="position:relative;">
+  <td colspan='1'>
+<input type="text"  value="{{dateYear}}" class="inputt" name="dateYear">年
+</td colspan='1'>
+<td><input type="text"  value="{{dateMonth}}" class="inputt" name="dateMonth">月
+</td>
+<td colspan='1'>
+<input type="text"  value="{{dateDay}}" class="inputt" name="dateDay">日
+</td>
+ </tr>
+<tr>
+<td colspan='1'>
+<input type="text"   value="{{doyYear}}" class="inputt" name="doyYear">年
+</td>
+<td colspan='1'>
+<input type="text"  value="{{doyDay}}" class="inputt" name="doyDay">天
+</td>
+</tr>
+<tr>
+<td colspan='1'>
+<input type="text"  readonly="read-only" value="{{gpsWeek}}" class="inputt" name="gpsWeek">周
+</td>
+</tr>
+<tr>
+<td colspan='1'>
+<input type="text"  readonly="read-only" value="{{decimalYear}}" class="inputt" name="decimalYear">小数年
+</td>
+</tr>
+<tr>
+<td colspan='1'>
+<input type="text"  readonly="read-only" value="{{MJD}}" class="inputt" name="MJD">儒昭日
+</td>
+</tr>
+<tr>
+<td>
+ <input  style="position:relative;left:300px;margin-top:30px;" name="run" type="submit" value="运行" class="submit_btn" >
+</td>
+</tr>
+</table>
+</form>
+{% endblock %}

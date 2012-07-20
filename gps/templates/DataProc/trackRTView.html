@@ -1,0 +1,153 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>trackRT view</title>
+<script type="text/javascript" src="/js/protoculous-1.0.2-packed.js"></script>
+<script language="javascript" type="text/javascript" > 
+    var tipId;
+   
+    function unfresh()
+    {
+    	window.clearInterval(tipId);
+    }
+    
+    function fresh()
+    {     
+        tipId = window.setInterval("show()",120000);
+    }
+    
+   
+    function GetRequest() {
+        var theRequest = new Object();
+        var url = location.search; 
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for(var i = 0; i < strs.length; i ++) {
+                theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    };
+    
+    function getCurrentDate(){
+        var newDate = new Date();
+        var year = newDate.getFullYear();
+        var month = parseInt(newDate.getMonth().toString())+1;
+        var day = newDate.getDate();
+        var hour = newDate.getHours();
+        
+	    if (hour >= "0" && hour <= "8")
+	    {
+	        day = day-1;
+	    }
+        
+        var y = year.toString();
+        var m = ((month<10)?"0":"")+month.toString();
+        var d = ((day<10)?"0":"")+day.toString();
+        time = y+m+d;
+        return time;
+    };
+    
+    
+    function show()
+    {        
+    // <![CDATA[		
+	//	var so = new SWFObject("../amstock/amstock/amstock.swf", "amstock", "100%", "100%", "8", "#FFFFFF");
+	//  des_site=CHZZ&ext_site=CABL&csv_time=06:00
+	    var theRequest = GetRequest();
+	    var dst = theRequest['des_site'];
+	    var ext = theRequest['ext_site'];
+	    var time = theRequest['csv_time'].split(':')[0]+''+theRequest['csv_time'].split(':')[1];
+	    var currentDate = getCurrentDate();
+	    
+	    //tmp = dst+'_'+ext+'_'+currentDate+'_'+time+'.csv';
+	    //tmp = dst+'_'+ext+'_'+currentDate+'_'+time+'.csv';
+	    tmp = dst+'_'+ext+'_'+'20120105_'+time+'.csv';
+	    
+		var so = new SWFObject("/amstock/amstock.swf", "amstock","800", "900", "8", "#FFFFFF");
+		//<!-- the path is the dir of data.csv-->
+		so.addVariable("path", "/amstock/");  //与csv文件路径有关
+		so.addVariable("settings_file", encodeURIComponent("/amstock/amstock_settings.xml"));
+		so.addVariable("additional_chart_settings", "<settings><data_reloading><interval>10</interval></data_reloading><data_sets><data_set did='0'><file_name>"+tmp+"</file_name></data_set></data_sets></settings>");
+	    so.addVariable("preloader_color", "#ff19ff"); // 加载时显示的颜色
+		so.write("flashcontent");
+		// ]]>                    
+    }   
+    
+     function isCheckedtoFresh()
+    {
+        if (document.getElementById('ckAfter').checked==true)
+        {
+	        fresh();
+	    }
+        else
+        {
+	        unfresh();
+	    }
+
+    }
+</script>
+
+<script language="javascript" type="text/javascript" >
+ 	
+function close() //author: sunlei
+{
+    var isIE=document.all?true:false;
+    if(isIE){//IE浏览器
+        var n = window.event.screenX - window.screenLeft;
+        var b = n > document.documentElement.scrollWidth-20;
+        
+        if(b && window.event.clientY<0 || window.event.altKey){
+            alert("是关闭而非刷新");
+        }else{
+            //alert("是刷新而非关闭");
+            //new Ajax.Request('/DataProc/killTrackRT/',{method:'GET',asynchronous:true});
+            trackRT_ID = "{{trackRT_ID|safe}}";
+            //alert(trackRT_ID);
+            //killTrackRT();
+            new Ajax.Request('/DataProc/killTrackRT/?trackRT_ID='+trackRT_ID,{method:'GET',asynchronous:true,parameters:''});
+        }
+    }
+    else{//火狐浏览器
+        if(document.documentElement.scrollWidth!=0)
+            alert("是刷新而非关闭");         
+        else{
+            //trackRT_ID = document.getElementsByName("trackRT_ID")[0].value;
+            trackRT_ID = "{{trackRT_ID|safe}}";
+            //alert(trackRT_ID);
+            //killTrackRT();
+            new Ajax.Request('/DataProc/killTrackRT/?trackRT_ID='+trackRT_ID,{method:'GET',asynchronous:true,parameters:''});
+            //new Ajax.Request('/DataProc/killTrackRT/',{method:'GET',asynchronous:true});
+            alert('实时显示已关闭！');
+        }
+    }
+};
+
+</script>          
+</head>
+
+<body onunload="close();">
+	<center>	
+<!-- saved from url=(0013)about:internet -->
+<!-- amstock script-->
+  <script type="text/javascript" src="/js/swfobject.js"></script>
+	<div id="flashcontent">
+		<strong>You need to upgrade your Flash Player</strong>
+	</div>
+</center>
+	
+	<center>
+	<script language="javascript" type="text/javascript">
+     	show();  
+    </script>
+<!-- end of amstock script -->
+ <hr noshade size="1">  
+
+		<div style="font-size:14px;">
+<input id="ckAfter"  type="checkbox" onclick="isCheckedtoFresh()"  name="每五分钟刷新" value="每2分钟刷新"/>每2分钟刷新</br>
+</div>
+
+</center>
+</body>
+</html>

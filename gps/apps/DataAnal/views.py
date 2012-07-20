@@ -19,17 +19,17 @@ log = logging.getLogger('django')
 @user_passes_test(lambda u:u.is_authenticated)
 def strain(request):
     user = request.user.username
-    velFilePath = os.path.join(CONFIG.SOFTWAREPATH,'exp2nd/vel_result/result.vel')
-    strainFilePath = os.path.join(CONFIG.SOFTWAREPATH,'exp2nd/strain_result/NCCGPS.dat')
+    velFilePath = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/vel_result/result.vel')
+    strainFilePath = os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/strain_result/NCCGPS.dat')
     cmd = 'cp %s %s' % (velFilePath,strainFilePath)
     try:
         os.popen(cmd)
-        cmd='cd %s ; ./strain  ; ./drawstrain.sh ' % (os.path.join(CONFIG.SOFTWAREPATH,'exp2nd/strain_result'))
+        cmd='cd %s ; ./strain  ; ./drawstrain.sh ' % (os.path.join(CONFIG.SOFTWAREPATH+user,'exp2nd/strain_result'))
         os.popen(cmd)        
     except Exception:
         error = "Strain Processing by command strain wrong!"
         log.exception(error)
-    return render_to_response("strain.html",{'username':username,'error':error,'file':'/'+user+'/exp2nd/strain_result/NCCGPS.dat','png':'/'+user+'/exp2nd/strain_result/strain.png'},context_instance=RequestContext(request))
+    return render_to_response("DataAnal/strain.html",{'file':CONFIG.SOFTWAREPATH+user+'/exp2nd/strain_result/NCCGPS.dat','png':CONFIG.SOFTWAREPATH+user+'/exp2nd/strain_result/strain.png'},context_instance=RequestContext(request))
         
 #读取站点数目
 #sitelist=readInfo(0)
@@ -45,7 +45,7 @@ def doubleSite(siteA,siteB):
 
 @user_passes_test(lambda u:u.is_authenticated)
 def expandrate(request):
-    return render_to_response('expandrate.html',{},context_instance=RequestContext(request))
+    return render_to_response('DataAnal/expandrate.html',{},context_instance=RequestContext(request))
 
 @user_passes_test(lambda u:u.is_authenticated)    
 def expandrateAnalyse(request):
@@ -114,11 +114,11 @@ def expandrateAnalyse(request):
     png = 'exp2nd/expandrate_result/%sexpandrate%s.png' %(user,now)
     subprocess.call('cp %s %s'%(CONFIG.SOFTWAREPATH+user+'/'+png,CONFIG.SOFTWAREPATH+'static/img/%sexpandrate%s.png'%(user,now)),shell=True)
     os.popen('convert -trim %s %s ; rm %s' % (imagename,os.path.join(CONFIG.SOFTWAREPATH+user,png),imagename)) 
-    return render_to_response('png_expandRate.html',{'file':'/exp2nd/expandrate_result/expandrate.dat','png':CONFIG.SOFTWAREPATH+'static/img/%sexpandrate%s.png'%(user,now)},context_instance=RequestContext(request))
+    return render_to_response('/DataProc/png_expandRate.html',{'file':CONFIG.SOFTWAREPATH+user+'/exp2nd/expandrate_result/expandrate.dat','png':CONFIG.SOFTWAREPATH+'static/img/%sexpandrate%s.png'%(user,now)},context_instance=RequestContext(request))
   	
 	
 def crosssection(request):
-    return render_to_response('crosssection.html',{},context_instance=RequestContext(request))
+    return render_to_response('DataAnal/crosssection.html',{},context_instance=RequestContext(request))
     
 def crosssectionAnalyse(request): #num表示线
     user = request.user.username
@@ -254,13 +254,13 @@ def crosssectionAnalyse(request): #num表示线
     files.append('/'+vertical+'.dat')
     pngs.append('/'+vertical+now+'.png')
     
-    return render_to_response('png_crosssection.html',{'files':files,'pngs':pngs},context_instance=RequestContext(request))
+    return render_to_response('/DataProc/png_crosssection.html',{'files':files,'pngs':pngs},context_instance=RequestContext(request))
     
 def deltaV(request):
-    return render_to_response('deltaV.html',{'png':png},context_instance=RequestContext(request))
+    return render_to_response('/DataProc/deltaV.html',{'png':png},context_instance=RequestContext(request))
 
 def deltaS(request):
-    return render_to_response('deltaS.html',{'png':png},context_instance=RequestContext(request))
+    return render_to_response('/DataProc/deltaS.html',{'png':png},context_instance=RequestContext(request))
 
 def drawsomething(year_1,year_2,day_1,day_2):
     return True

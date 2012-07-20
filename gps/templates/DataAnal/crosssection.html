@@ -1,0 +1,91 @@
+{% extends "DataAnal/base,html" %}
+{%block crosssection%}active{%endblock%}
+{% block body %}
+<style type="text/css">
+
+.click_line:hover 
+{
+	cursor:pointer;}
+	.block
+	{
+	position:absolute;
+		top:0;
+		width:600px;
+	}
+	img
+	{
+	
+		width:600px;
+	}
+	#cross1
+	{width:300px;
+	}
+	#cross2
+	{width:300px;}
+</style>
+
+<script type="text/javascript">
+function showCro(tt)
+{
+	document.getElementById(tt).style.display="block";
+	
+	};
+function gos(tt)
+{
+	document.getElementById(tt).style.display="none";
+	}
+function crocessSecion(num)
+{
+	alert(num);
+	str = 'num='+num ;
+	new Ajax.Updater('crosssectionResult','/DataAnal/crosssectionAnalyse',{method:'GET',asynchronous:true,parameters:str});	   
+	}
+</script>
+
+<div style="z-index:-1;">
+<img src="/site_media/static/img/crosssectionBase.JPG" />
+</div>
+
+
+<div Id="pic1" style="z-index:1;display:none;">
+<img class="block" src="/site_media/static/img/line/1.png" style="z-index:1;"/>
+</div>
+<div class="click_line" style="z-index:9; position:absolute; width:219px; height:290px; left:221px; right:200px; top: 150px;" onmousemove="showCro('pic1')" onmouseout="gos('pic1')" onclick="crocessSecion(1)" ></div>
+<div class="click_line" style="z-index:9; position:absolute; width:132px; height:138px; left: 114px; top: 73px;" onmousemove="showCro('pic1')" onmouseout="gos('pic1')" onclick="crocessSecion(1)" ></div>
+
+
+<div Id="pic2" style="z-index:1;display:none;">
+<img class="block" src="/site_media/static/img/line/2.png" style="z-index:1;"/>
+</div>
+<div class="click_line" style="z-index:9; position:absolute; width:128px; height:100px; left: 424px; top: 306px;" onmousemove="showCro('pic2')" onmouseout="gos('pic2')" onclick="crocessSecion(2)">
+</div>
+
+
+<div Id="pic3" style="z-index:1;display:none">
+<img class="block"  src="/site_media/static/img/line/3.png" style="z-index:1;"/>
+</div>
+<div class="click_line" style="z-index:9; position:absolute; width:74px; height:181px; left: 357px; top: 210px;" onmousemove="showCro('pic3')" onmouseout="gos('pic3')" onclick="crocessSecion(3)"></div>
+
+
+<div Id="pic4" style="z-index:3;display:none">
+<img class="block"  src="/site_media/static/img/line/4.png" style="z-index:1;"/>
+</div>
+<div class="click_line" style="z-index:9; position:absolute; width:97px; height:135px; left: 228px; top: 208px;" onmousemove="showCro('pic4')" onmouseout="gos('pic4')" onclick="crocessSecion(4)"></div>
+
+<div Id="pic5" style="z-index:3;display:none">
+<img class="block" src="/site_media/static/img/line/5.png" style="z-index:1;"/>
+</div>
+<div class="click_line" style="z-index:9; position:absolute; width:100px; height:87px; left: 176px; top: 169px;" onmousemove="showCro('pic5')" onmouseout="gos('pic5')" onclick="crocessSecion(5)">
+</div>
+
+
+
+<div Id="pic6" style="z-index:3;display:none">
+<img class="block" src="/site_media/static/img/line/6.png" style="z-index:1;"/>
+</div>
+<div class="click_line" style="z-index:9; position:absolute; width:90px; height:99px; left: 209px; top: 57px;" onmousemove="showCro('pic6')" onmouseout="gos('pic6')" onclick="crocessSecion(6)">
+</div>
+
+<div id="crosssectionResult">
+</div>
+{% endblock %}

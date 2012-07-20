@@ -1,0 +1,270 @@
+{% extends "ResultView/base.html" %}
+{%block atmosphereZenithDelay%}active{%endblock%}
+{% block body %}
+
+<table align="center" class="table table-bordered">
+  <tr>
+    <td align="center" colspan="4"><h2 align="center">大气天顶延迟</h2></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="4"> 选择时间段：</td>
+  </tr>
+  <tr>
+    <td align="left">开始时间：&nbsp; &nbsp</td>
+    <td><select name="startYear" onChange="getStartDates();getEndYear();getEndMonth();">
+        <script language="javascript" type="text/javascript">  
+            var date=new Date();  
+            var year=date.getFullYear();            
+            for(var i=2000;i<=year;i++){                            
+                document.write("<option value="+i+">"+i+"</option>");  
+            }
+            function  append(o,v){                    		
+                var option=new Option(v,v);   
+                o.options.add(option);  
+            }
+            function getEndYear(){
+                var eYear=document.getElementsByName("endYear")[0];
+                var y=document.getElementsByName("startYear")[0].value;
+                eYear.innerHTML="";
+                for(j=y;j<=year;j++){
+                    append(eYear,j);    
+                }
+                getEndDates();
+            }
+    	</script>
+      </select>
+      年&nbsp;&nbsp</td>
+      <td>
+      <select name="startMonth"  onChange="getStartDates();getEndMonth();">
+        <script language="javascript" type="text/javascript">
+            document.write("<option value="+1+" selected>"+1+"</option>");
+            for(var i=2;i<=12;i++){  
+                    document.write("<option value="+i+">"+i+"</option>");  
+            }
+            function  is_leapYear(){
+            var y=document.getElementsByName("startYear")[0].value;  
+
+            var flag=true;  
+            flag=(y%4==0&&y%100!=0||y%400==0);  
+            return flag; 
+            }
+            function  getEndMonth(){
+                var e_yValue=document.getElementsByName("endYear")[0].value;
+                var s_yValue=document.getElementsByName("startYear")[0].value;
+                var s_mValue=document.getElementsByName("startMonth")[0].value;
+                var e_Month=document.getElementsByName("endMonth")[0];
+                e_Month.innerHTML="";
+                if(e_yValue==s_yValue){
+                    
+                    for(j=s_mValue;j<=12;j++)
+                        append(e_Month,j);
+                }
+                else{                
+                    for(j=1;j<=12;j++)
+                        append(e_Month,j);
+                }
+                
+            }
+            function  getStartDates(){
+                var day=document.getElementsByName("startDay")[0];
+                day.innerHTML="";  
+                var month=document.getElementsByName("startMonth")[0].value;
+                var flag=is_leapYear();
+                if(flag && month==2){
+                for(i=1;i<30;i++){
+                    append(day,i);
+                }
+                }
+                else if(!flag && month==2)
+                    for(i=1;i<29;i++){
+                    append(day,i);
+                    }
+                else if(month==4 || month==6 || month==9 || month==11){
+                    for(i=1;i<31;i++){
+                    append(day,i);
+                    }
+                }
+                else{
+                    for(i=1;i<32;i++){
+                    append(day,i);
+                    }
+                }
+            }
+            
+    	</script>
+      </select>  
+      月&nbsp;&nbsp</td>
+      <td>
+      <select name="startDay" onChange="getEndDates()">
+        <script language="javascript" type="text/javascript">
+            document.write("<option value="+1+" selected>"+1+"</option>");
+            for(var i=2;i<=31;i++){  
+                document.write("<option value="+i+">"+i+"</option>");
+            }
+            function getEndDay(){
+                var e_yValue=document.getElementsByName("endYear")[0].value;
+                var s_yValue=document.getElementsByName("startYear")[0].value;
+                var s_mValue=document.getElementsByName("startMonth")[0].value;
+                var e_mValue=document.getElementsByName("endMonth")[0].value;
+                var s_dValue=document.getElementsByName("startDay")[0].value;
+                var e_Day=document.getElementsByName("endDay")[0];
+
+                if(e_yValue==s_yValue && e_mValue==s_mValue){
+                    return s_dValue;
+                }
+                else
+                    return 1;
+            }
+        
+        </script>
+      </select>
+      日&nbsp;&nbsp</td>
+    </tr><tr>
+    <td align="left">截止时间：   </td>
+        <td><select name="endYear" onChange="getEndMonth();getEndDates();">
+        <script language="javascript" type="text/javascript">  
+            var date=new Date();  
+            var year=date.getFullYear();
+            document.write("<option value="+year+" selected>"+year+"</option>");
+            for(var i=year-1;i>=year-11;i--){                            
+            document.write("<option value="+i+">"+i+"</option>");  
+            }								                 		                                  	    
+    	</script>
+      </select>
+      年&nbsp;&nbsp</td>
+      <td>
+      <select name="endMonth"  onChange="getEndDates()">
+        <script language="javascript" type="text/javascript">
+            document.write("<option value="+1+" selected>"+1+"</option>");
+            for(var i=2;i<=12;i++){  
+                    document.write("<option value="+i+">"+i+"</option>");  
+            }
+            function  endis_leapYear(){
+            var y=document.getElementsByName("endYear")[0].value;  
+
+            var flag=true;  
+            flag=(y%4==0&&y%100!=0||y%400==0);  
+            return flag; 
+            }    
+            function  getEndDates(){
+                s_day=getEndDay()
+                var e_day=document.getElementsByName("endDay")[0];
+                e_day.innerHTML="";  
+                var month=document.getElementsByName("endMonth")[0].value;
+                var flag=endis_leapYear();
+                if(flag && month==2){
+                for(i=s_day;i<30;i++){
+                    append(e_day,i);
+                }
+                }
+                else if(!flag && month==2)
+                    for(i=s_day;i<29;i++){
+                    append(e_day,i);
+                    }
+                else if(month==4 || month==6 || month==9 || month==11){
+                    for(i=s_day;i<31;i++){
+                    append(e_day,i);
+                    }
+                }
+                else{
+                    for(i=s_day;i<32;i++){
+                    append(e_day,i);
+                    }
+                }
+            }                        
+    	</script>
+      </select>  
+      月&nbsp;&nbsp</td>
+      <td>
+      <select name="endDay">
+        <script language="javascript" type="text/javascript">
+            document.write("<option value="+1+" selected>"+1+"</option>");
+            for(var i=2;i<=31;i++){  
+                    document.write("<option value="+i+">"+i+"</option>");  
+            }
+                                
+    	</script>
+      </select>
+      日&nbsp;&nbsp</td>
+  </tr>
+  <tr>       
+    <td colspan="2"  >
+        <br>目标站点：&nbsp;&nbsp;&nbsp;&nbsp<select name="dst_station">
+            <script language="javascript" type="text/javascript">                    
+                    {% for dst in dstList %} 
+                            document.write("<option value={{dst}}>{{dst}}</option>");  
+                    {% endfor %}
+
+    	    </script>
+    </td>
+    <td colspan="2" align="left">
+        <br><input type="checkbox" name='trend' value="trend">趋势
+    <td>
+  </tr>
+  <tr>
+    <script language="javascript" type="text/javascript">
+        var dvMsg = document.createElement("div");
+        var dv = document.createElement("div");
+        function selfAlert(strHtml){  
+            //该值可以作为返回值，初始化时为 0 ，点击确定后变为 1 ，点击关闭后变为 2 ，自动关闭 3   
+            var alertValue = 0;     
+            //创建提示对话框面板  
+            
+            dvMsg.style.position = "absolute";  
+            dvMsg.setAttribute('id','msg');  
+            dvMsg.style.width = "300px";  
+            dvMsg.style.height = "200px";  
+            dvMsg.style.top="40%";  
+            dvMsg.style.left="40%";  
+            dvMsg.style.background = "white";  
+            dvMsg.style.zIndex = "1112";  
+              
+            
+            dvMsg.innerHTML = strHtml;  
+            document.body.appendChild(dvMsg);  
+               
+            //timer秒后自动关闭selfAlert(提示框)  		
+        }
+        function overlay(){
+            var h = screen.availHeight;  
+            var w = screen.availWidth;
+            dv.setAttribute('id','bg');
+            dv.setAttribute('class','black_overlay');
+            //将该元素添加至body中  
+            document.body.appendChild(dv);   		
+        }
+        function remove(){   		    	    
+            document.body.removeChild(dvMsg);  
+        }  
+        function Draw_azDelay_pictures(){
+            var startY=document.getElementsByName("startYear")[0].value;           
+            var startM=document.getElementsByName("startMonth")[0].value;
+            var startD=document.getElementsByName("startDay")[0].value;
+            var endY=document.getElementsByName("endYear")[0].value;
+            var endM=document.getElementsByName("endMonth")[0].value;
+            var endD=document.getElementsByName("endDay")[0].value;
+            var dst_station=document.getElementsByName("dst_station")[0].value;
+            var t=document.getElementsByName("trend");
+            var trend='0';
+            if(t[0].checked)
+                trend='1';
+            var str='startYear='+startY+'&startMonth='+startM+'&startDay='+startD+'&endYear='+endY+'&endMonth='+endM+'&endDay='+endD+'&dst_station='+dst_station+'&trend='+trend
+            alert(str);
+            new Ajax.Updater('atZenithDelay','/ResultView/Draw_azDelay_pictures/',{method:'GET',asynchronous:true,parameters:str,onComplete:show_timeSeries});
+            overlay();
+	    selfAlert("<h3 align='center'>后台正在处理数据...</h3>");
+        }
+        function show_timeSeries(){
+            remove();
+            document.body.removeChild(dv);
+        }
+    </script>
+    <td colspan="2" align="right"><br><br><input type="button" value="确定" class="submit_btn" onclick="Draw_azDelay_pictures()"></td>
+  </tr>
+  
+</table>
+&nbsp;&nbsp;&nbsp;&nbsp<div id="atZenithDelay" align="center">
+</div>
+
+
+{% endblock %}

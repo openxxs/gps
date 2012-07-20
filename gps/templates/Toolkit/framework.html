@@ -1,0 +1,47 @@
+{% extends "Toolkit/base.html" %}
+{%block framework%}active{%endblock%}
+{% block body %}
+<table align="center" class="table table-bordered">
+  <tr>
+    <td align="center" colspan="4"><h2 align="center">参考架转换</h2></td>
+  </tr>
+  <tr>
+  <td>
+  输入框架<input type="text" class="inputt" name="orgFrame" value="ITRF93">
+  </td>
+  </tr>
+  <tr>
+  <td>
+  输出框架<input type="text" class="inputt" name="desFrame" value="EURA">
+   </td>
+  </tr>
+  <tr>
+<td>
+ <script language="javascript" type="text/javascript">
+    function changeFrame()
+    {
+        var orgFrame = document.getElementsByName("orgFrame")[0].value;
+        var desFrame = document.getElementsByName("desFrame")[0].value;
+        var str="orgFrame="+orgFrame+"&desFrame="+desFrame;
+        alert(str);
+        new Ajax.Request('/Toolkit/changeFrame/',{method:'GET',asynchronous:true,parameters:str,onComplete:changeComplete});
+    }
+    function changeComplete(){
+        alert("转换完成");
+        linkDiv = document.getElementById("changeFrameDiv");
+        linkInfo = document.getElementById("changeFrameInfo");           
+        linkInfo.innerHTML='data.zip';
+        linkInfo.href="/exp2nd/toolkits/changeFrame/data.zip";
+        linkDiv.style.display="block";
+    }
+ </script>
+ <input  style="position:relative;left:350px;top:20px;" name="run" type="submit" value="运行" class="submit_btn" onclick="changeFrame();">
+</td>
+</tr>
+</table>
+<div id="changeFrameDiv" style="display:none;font-size:16px;" align="center">
+<p size="25px">
+下载请点击：<a href="#" id="changeFrameInfo" ></a>
+</p>
+</div>
+{% endblock %}
