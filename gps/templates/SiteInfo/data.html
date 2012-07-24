@@ -1,0 +1,100 @@
+{% extends "SiteInfo/base.html"%}
+{%block dataManaging%}active{%endblock%}
+{% block body%}
+<table class="table table-bordered">
+  <tr>
+    <td align="left">
+    <script language="javascript" type="text/javascript">
+        var dvMsg = document.createElement("div");
+        var dv = document.createElement("div");  
+        i=0;
+        function data_update(txt){    //这里注意，函数名不能用js的关键字，这里的update就是引用的ajax框架的关键字
+            new Ajax.Updater('infoblock','/siteInfo/data/update/'+txt,{method:'GET',asynchronous:true,onComplete: showResponse});
+            overlay();
+            selfAlert("<h3 align='center'>后台正在处理数据...</h3>");
+        }
+        function showResponse(){
+            remove();	                
+            strHtml = "<p id='aa'>数据正在更新...</p><div id='out'><div id='in_0'>已加载1%</div><div id='in' style='width:1%'><div id='in_1'></div></div></div><div><br><input type='button' value='关闭' class='submit_btn' onclick='document.body.removeChild(dvMsg);;document.body.removeChild(dv);'></div>"  
+            selfAlert(strHtml);		
+            start();	
+            }
+        function read_info(response){
+                setTimeout("remove();document.body.removeChild(dv)",30000)
+        }
+        function remove(){   		    	    
+                document.body.removeChild(dvMsg);  
+        }  	     
+        function selfAlert(strHtml){  
+            //该值可以作为返回值，初始化时为 0 ，点击确定后变为 1 ，点击关闭后变为 2 ，自动关闭 3   
+            var alertValue = 0;     
+            //创建提示对话框面板  
+            
+            dvMsg.style.position = "absolute";  
+            dvMsg.setAttribute('id','msg');  
+            dvMsg.style.width = "400px";  
+            dvMsg.style.height = "200px";  
+            dvMsg.style.top="40%";  
+            dvMsg.style.left="40%";  
+            dvMsg.style.background = "white";  
+            dvMsg.style.zIndex = "1112";  
+              
+            
+            dvMsg.innerHTML = strHtml;  
+            document.body.appendChild(dvMsg);  
+               
+            //timer秒后自动关闭selfAlert(提示框)  		
+        }
+        function overlay(){
+            var h = screen.availHeight;  
+            var w = screen.availWidth;
+            dv.setAttribute('id','bg');
+            dv.setAttribute('class','black_overlay');
+            //将该元素添加至body中  
+            document.body.appendChild(dv);   		
+        }
+
+        function start()
+        {
+            ba=setInterval("begin()",10);//setInterval 返回的是一个全局变量，一个间隔数值.这个数值是表示调用setInterval的次数
+        }
+        function begin()
+        {
+            i+=1;
+            if(i<=100)
+            {
+                document.getElementById("in").style.width=i+"%";
+                document.getElementById("in_0").innerHTML= document.getElementById("in_1").innerHTML="已加载"+i+"%";}
+            else
+            {
+                clearInterval(ba);
+                document.getElementById("out").style.display="none";
+                //infos=(String)({{info}});//注意类型的转
+            
+                document.getElementById("aa").innerHTML= "更新完成<br />正在后台获取更新结果...";
+                new Ajax.Updater('aa','/siteInfo/data/updateInfo',{method:'GET',asynchronous:true,onComplete:read_info});
+            }
+        } 
+    </script>
+    <input type="button" id="update" value="更新" class="submit_btn" onClick="data_update('{{site.code}}');" ></input>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><a name="observation" href="#">台站观测时间段</a></td>
+    <td><img src="{{png1}}"/></td>
+    
+  </tr>
+  <tr>
+    <td align="center"><a name="eopch" href="#">有效历元</a></td>
+    <td><img src="{{png2}}"/></td>
+  </tr>
+  <tr>
+    <td align="center"><a name="mp1" href="#">MP1</a></td>
+    <td><img src="{{png3}}"/></td>
+  </tr>
+  <tr>
+    <td align="center"><a name="mp2" href="#">MP2</a></td>
+    <td><img src="{{png4}}"/></td>
+  </tr>
+</table>
+{% endblock %}

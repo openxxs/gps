@@ -10,7 +10,7 @@ urlpatterns =patterns('gps.apps.SiteInfo.views',
     (r'siteBase/(?P<sitecode>\w{4})$','sitebase'),
     (r'siteBase$','sitebase'),
     (r'data/(?P<sitecode>\w{4})$','data'),
-    (r'data/siteSearch$','siteSearch'),
+    (r'data$','data'),
     (r'data/update/(?P<sitecode>\w{4})$','update'),
     (r'data/updateInfo$','updateInfo'),  
 )

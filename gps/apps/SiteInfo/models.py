@@ -4,7 +4,7 @@ def _(msg):
     return msg
 class Img(models.Model):
     name = models.CharField(max_length=10,null=True,blank=True)
-    img = models.ImageField(upload_to = CONFIG.SOFTWAREPATH+'/site_media/static/img/')
+    img = models.ImageField(upload_to = 'img/siteimg/')
     class Meta:
         verbose_name = _('Img')
         verbose_name_plural = _('Imgs')

@@ -65,11 +65,11 @@ def transformDoy(request):
         gpsWeek = doyResult[1]
     decimalYear = doyResult[2]
 
-    return render_to_response("Toolkit/doy.html",dict(locals(),**{'username':username,'error':error}),context_instance=RequestContext(request))
+    return render_to_response("Toolkit/doy.html",dict(locals(),**{}),context_instance=RequestContext(request))
     
     
 def framework(request):  
-    return render_to_response("Toolkit/framework.html",{'username':username,'error':error},context_instance=RequestContext(request))
+    return render_to_response("Toolkit/framework.html",{},context_instance=RequestContext(request))
     
 def changeFrames(request):
     orgFrame = request.GET['orgFrame']
@@ -78,7 +78,7 @@ def changeFrames(request):
     changeFrame.changeFrame(orgFrame,desFrame)
     return HttpResponse("change succeed")
 def dataDownloads(request):
-    return render_to_response("Toolkit/dataDownload.html",{'username':username,'error':error},context_instance=RequestContext(request))
+    return render_to_response("Toolkit/dataDownload.html",{},context_instance=RequestContext(request))
     
 def dataDownloadProcess(request):
     downloadType = request.GET['downloadType']

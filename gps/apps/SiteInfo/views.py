@@ -157,7 +157,7 @@ def updateInfo(request):
     return render_to_response('update.html',{'info':info},context_instance=RequestContext(request)) 
     
       
-def data(request,sitecode):
+def data(request,sitecode=None):
     global png1,png2,png3,png4
     count_file=open(os.path.join(cwd,'site_list/%s/png/count.txt' % sitecode),'r')
     count=(int)(count_file.read())

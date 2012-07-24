@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.utils.log import logging
 from django.template import RequestContext
 
-import sys, datetime, json, commands, os, re, shutil, linecache, glob, copy, threading, time
+import sys, datetime, json, commands, os, re, shutil, linecache, glob, copy, threading, time,logging
 from subprocess import *
 
 #import extractOscalaFile
@@ -41,7 +41,7 @@ def initlog():
     logger.setLevel(logging.DEBUG)
     return logger
 
-log = initlog
+log = initlog()
 
 GAMITTABLE = CONFIG.GAMITTABLEPATH
 SOFTWAREPATH = CONFIG.SOFTWAREPATH
@@ -79,9 +79,9 @@ def datatrack(request):
             now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
             trackResult = track.track(sYear, sMonth, sDay, sHour, eHour, sites, now)
             if trackResult:
-                return render_to_response("/DataProc/suc.html", {},context_instance=RequestContext(request))
+                return render_to_response("DataProc/suc.html", {},context_instance=RequestContext(request))
             else:
-                return render_to_response("/DataProc/fail.html", {},context_instance=RequestContext(request))
+                return render_to_response("DataProc/fail.html", {},context_instance=RequestContext(request))
     return render_to_response("DataProc/track.html", {'form': form},context_instance=RequestContext(request))
 
 
@@ -210,7 +210,7 @@ def datatrackrt(request):
                 request.session['trackRT_ID'] = []
                 request.session['trackRT_ID'].append(str(pid))'''
             log.info('***********', request.session['trackRT_ID'])
-            return HttpResponseRedirect('/DataProc/trackRT_View?des_site="+des_Station+"&ext_site="+ext_Station+"&csv_time="+csv_Time')
+            return HttpResponseRedirect('DataProc/trackRT_View?des_site="+des_Station+"&ext_site="+ext_Station+"&csv_time="+csv_Time')
     return render_to_response("DataProc/trackrt.html", {'form': form},context_instance=RequestContext(request))
 
 # @login_required()
@@ -249,9 +249,9 @@ def baselineProcess(request):
             extractOscalaFile.extractTempFile(year_1, day_1, year_2, day_2, 'baseline',username)
             getBaselineData.getData('baseline',username)
             if not error:
-                return render_to_response("/DataProc/suc.html", {},context_instance=RequestContext(request))
+                return render_to_response("DataProc/suc.html", {},context_instance=RequestContext(request))
             else:
-                return render_to_response("/DataProc/fail.html", {},context_instance=RequestContext(request))
+                return render_to_response("DataProc/fail.html", {},context_instance=RequestContext(request))
     return render_to_response("DataProc/baseline.html", {'form': form},context_instance=RequestContext(request))
 
 @login_required()
@@ -268,9 +268,9 @@ def atmosphereProcess(request):
             extractOscalaFile.extractTempFile(year_1, day_1, year_2, day_2, 'atmosphere')
             getAtmosphereData.getData('atmosphere',username)
             if not error:
-                return render_to_response("/DataProc/suc.html", {},context_instance=RequestContext(request))
+                return render_to_response("DataProc/suc.html", {},context_instance=RequestContext(request))
             else:
-                return render_to_response("/DataProc/fail.html", {},context_instance=RequestContext(request))
+                return render_to_response("DataProc/fail.html", {},context_instance=RequestContext(request))
     return render_to_response("DataProc/atmosphere.html", {'form': form},context_instance=RequestContext(request))
 
 
@@ -333,8 +333,9 @@ def Init_experiment(prj, year_1, year_2):
     log.info('init_experiment' + prj)
     os.mkdir(prj)
     os.popen("cd %s;mkdir experiment" % prj)
+    os.chdir(SOFTWAREPATH + prj+"/experiment")
     for year in xrange(year_1, year_2 + 1):
-        os.popen("cd experiment; mkdir %s;cd %s; mkdir rinex; ln -s %s/????/* rinex; cp -rf %s tables/ " % (
+        os.popen("mkdir %s;cd %s; mkdir rinex; ln -s %s/????/* rinex; cp -rf %s ../tables/ " % (
         str(year), str(year), RINEXPATH, GAMITTABLE))
     return True
 
@@ -473,7 +474,7 @@ def vel_process(prj):
     return error
 
 def tableStatistic(username):
-    os.chdir(SOFTWAREPATH + username + "/tables/")
+    os.chdir(SOFTWAREPATH + username + "/experiment/tables")
     #"soltab.*","luntab.*","nutabl.*",
     filestatus = [{'name': filen, 'time': time.ctime(os.path.getmtime(filen))} for filen in fileList]
     return filestatus
@@ -504,7 +505,7 @@ def tableStatisticDetail(request, filename):
 @login_required()
 def dataStatisticDetail(request):
     usern = username.username
-    os.chdir(SOFTWAREPATH + usern + "/experiments/")
+    os.chdir(SOFTWAREPATH + usern + "/experiment/")
     os.path.exists("rinex") and True or os.mkdir("rinex")
     os.popen("ln -s %s/????/* rinex;" % RINEXPATH)
     form = BulkProcessForm()
@@ -515,7 +516,7 @@ def dataStatisticDetail(request):
             year_1, day_1, year_2, day_2,IGS = int(data['StartYear']), int(data['StartDay']), int(data['EndYear']), int(data['EndDay']),data['IGS']
         else:
             fileStatus = tableStatistic(user)
-            return render_to_response('DataProc/DataProc.html',{'form':form,'fileStatus':fileStatus,'fileList':fileList})
+            return render_to_response('DataProcDataProc.html',{'form':form,'fileStatus':fileStatus,'fileList':fileList})
     siteList = config.get("path", "checklist").split('%%')
     years = [str(year)[:2] for year in xrange(year_1, year_2 + 1)]
     if len(years) == 1:
@@ -526,7 +527,7 @@ def dataStatisticDetail(request):
         days += [('%03d' % day, year) for year in common_years for day in xrange(1, isLeap(int(year) + 2000) + 1)]
         days += [('%03d' % day, years[len(years) - 1]) for day in xrange(1, day_2 + 1)]
     for site in siteList:
-        os.chdir(SOFTWAREPATH + userm + "/experiments/rinex/")
+        os.chdir(SOFTWAREPATH + userm + "/experiment/rinex/")
         l = commands.getoutput("ls *.*o | grep %s" % site)
         l = [(a[4:7], a[9:11]) for a in l]
         infos = list(set(copy.deepcopy(days)) - set(dates[1]))
@@ -587,4 +588,4 @@ def DataProc(request):
         Init_experiment(user,2012,2012)
     form = BulkProcessForm()
     fileStatus = tableStatistic(user)
-    return render_to_response('DataProc/DataProc.html',{'form':form,'fileStatus':fileStatus,'fileList':fileList})
+    return render_to_response('DataProc/DataProc.html',{'form':form,'fileStatus':fileStatus,'fileList':fileList},context_instance=RequestContext(request))

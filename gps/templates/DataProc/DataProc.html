@@ -12,7 +12,10 @@
 		<div class="tab-pane active" id="1">
 			<script type="text/javascript">
 			    function readConfigFile(filename){
-			        new Ajax.Updater('configDiv','/DataProc/configEditDetail/'+filename+'/',{method:'get',asynchronous:true,onComplete:showGedit(filename)});
+			        htmlobj=$.ajax({url:"/DataProc/configEditDetail/"+filename+"/",async:true});
+			        $('#configDiv').html(htmlobj.responseText);
+			        showGedit(filename);
+
 			    }
 			    function showGedit(filename){
 			        var editConfig = document.getElementById('editConfig');

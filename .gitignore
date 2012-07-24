@@ -4,3 +4,7 @@
 local_settings.py
 .idea
 .idea/*
+/gps/fjea/experiment/2012/rinex/*
+/gps/fjea/experiment/tables/antex.template
+/gps/liu/experiment/tables/ut1.vlbi.940323
+/gps/fjea/experiment/tables/antmod.GmbH

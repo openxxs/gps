@@ -3,6 +3,7 @@
 {% block body%}
     <div class="span5">
         <form class="well form-search" action="SiteInfo/siteBase" method="POST">
+            {% csrf_token %}
         <input name="sitecode" class="span3" type="text" data-provide="typeahead" data-resource="{{sitenameList}}">
         <button type="submit" class="btn btn-primary">查看</button>
         </form>
