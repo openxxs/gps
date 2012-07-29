@@ -544,9 +544,9 @@ def configEdit(request):
 @login_required()
 def configEditDetail(request, filename):
     username = request.user.username
-    os.chdir(SOFTWAREPATH + username + "/tables/")
-    if filename in fileList:
-        return HttpResponse(readFile(filename))
+    os.chdir(SOFTWAREPATH + username + "/experiment/tables/")
+    print readFile(filename),filename,os.getcwd()
+    return HttpResponse(readFile(filename))
 
 @login_required()
 def readGamitLog(request, year):
@@ -557,11 +557,18 @@ def readGamitLog(request, year):
 
 @login_required()
 def saveConfigFile(request, filename):
-    username = request.user.username
-    configText = request.POST['editConfig']
-    writeFile(SOFTWAREPATH + username + "/tables/" + filename,configText)
-    return HttpResponse('successful')
-
+    try:
+        print request
+        username = request.user.username
+        configText = request.POST['editConfig']
+        i=writeFile(SOFTWAREPATH + username + "/experiment/tables/" + filename,configText)
+        print i
+        if i:
+            return True
+    except Exception, e:
+        print e
+        raise e
+    
 @login_required()
 def resetConfigFile(request):
     username = request.user.username

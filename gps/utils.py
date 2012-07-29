@@ -33,15 +33,16 @@ def readFile(filename):
 
 #修改文件
 def writeFile(filename,lines):
-	try:
-	    f = open(filename,"w")
-	    f.seek(0)
-	    f.write(lines)
-	    f.close()
-	    return True
-	except:
-		log.error('An exception occured while writing into the file ')
-		return False
+    try:
+        f = open(filename,"w")
+        f.seek(0)
+        f.write(lines)
+        f.close()
+        return True
+    except Exception,ex:
+        log.exception(ex)
+        log.error('An exception occured while writing into the file ')
+        return False
 
 #备份原始文件
 def backupFile(filename):

@@ -12,7 +12,7 @@
 		<div class="tab-pane active" id="1">
 			<script type="text/javascript">
 			    function readConfigFile(filename){
-			        htmlobj=$.ajax({url:"/DataProc/configEditDetail/"+filename+"/",async:true});
+			        htmlobj=$.ajax({url:"/DataProc/configEditDetail/"+filename,async:false});
 			        $('#configDiv').html(htmlobj.responseText);
 			        showGedit(filename);
 
@@ -28,7 +28,7 @@
 			    }
 			    function show_link(filename){
 			        var operatorDiv = document.getElementById('operatorDiv');
-			        document.writeform.action ='/DataProc/saveConfigFile/'+filename+'/';
+			        document.writeform.action ='/DataProc/saveConfigFile/'+filename;
 			        operatorDiv.style.display="block";
 			    }
 			    function hideGedit(){
@@ -38,10 +38,12 @@
 			        operatorDiv.style.display="none";
 			    }
 			    function resetConfigFile(){
-			        new Ajax.Request('/DataProc/resetConfigFile/',{method:'POST',asynchronous:true,onComplete:writeResult});
+			    	$,ajax({url:"/DataProc/resetConfigFile/",async:false});
+			    	alert('保存完成');
 			    }
-			    function writeResult(){
-			        alert('保存完成');
+			    function writeContent() {
+			    	$.post(document.writeform.action,{editConfig:$("#configDiv").val()},hideGedit());
+			    	alert(editConfig)
 			    }
 			    </script>
 		<div><table align="center" class="table table-bordered">
@@ -52,7 +54,7 @@
 				   {% for file in fileList %}
 				  <tr>
 				    <td align="center">{{file}}</td>
-				    <td align="center"><input type="button" value="编辑" onclick="readConfigFile('{{file}}')"/></td>
+				    <td align="center"><input type="button" class="btn brn-primary" value="编辑" onclick="readConfigFile('{{file}}')"/></td>
 				  </tr>
 				{% endfor %}
 				<tr>
@@ -61,11 +63,12 @@
 				</tbody>  
 				</table>
 				<form action='/DataProc/saveConfigFile/' method='POST' name="writeform">
-				<textarea id="editConfig" name="editConfig" class="edit_overlay" rows="20" cols="110" style="display:none;">		
+					{% csrf_token %}
+				<textarea id="editConfig" name="editConfig" class="edit_overlay span8" rows="20"style="display:none;">		
 				</textarea>
 				<div id="operatorDiv" class="div_overlay" style="display:none;" >
-				<input type="submit" name="write" value="保存" />
-				<input type="button" name="shutdown" value="关闭" onclick="hideGedit()"/>
+				<input type="buttom" class="btn brn-primary" name="write" value="保存" onclick="writeContent()"/>
+				<input type="button" class="btn brn-primary" name="shutdown" value="关闭" onclick="hideGedit()"/>
 				</div>
 				</form>
 				<div id="configDiv" style="display:none;" >
