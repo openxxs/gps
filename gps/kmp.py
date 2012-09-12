@@ -10,6 +10,7 @@ def compute_prefix_function(p):
         pi[q] = k
     return pi
 
+# match strings by kmp algorithm
 def kmp_matcher(t, p):
     n = len(t)
     m = len(p)
