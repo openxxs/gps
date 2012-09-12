@@ -11,7 +11,7 @@ from pinax.apps.account.openid_consumer import PinaxConsumer
 
 handler500 = "pinax.views.server_error"
 
-
+#test
 urlpatterns = patterns("",
     url(r"^$", direct_to_template, {
         "template": "homepage.html",
